@@ -1,0 +1,52 @@
+[
+  {
+    "id": "working-clearances",
+    "page": 46,
+    "caption": "Minimum Clear Distance for Condition (2) (ft)",
+    "header": [
+      "Nominal Voltage to Ground",
+      "(a)",
+      "(b)",
+      "(c)"
+    ],
+    "continues_on": [
+      47
+    ],
+    "end_before": "1. The minimum clear distance"
+  },
+  {
+    "id": "welding-shades",
+    "page": 134,
+    "caption": "Filter lens shade numbers for protection against Radiant Energy",
+    "header": [
+      "Welding Operation",
+      "Shade #"
+    ],
+    "continues_on": [
+      135
+    ],
+    "end_before": "1. Occupational Head Protection"
+  },
+  {
+    "id": "first-aid-kit",
+    "page": 190,
+    "header": [
+      "ITEM",
+      "SIZE",
+      "QUANTITY"
+    ],
+    "continues_on": [
+      191
+    ],
+    "end_before": "Revision Tracking Table"
+  },
+  {
+    "id": "ladder-overlap",
+    "page": 43,
+    "header": [
+      "Nominal Ladder Length (ft)",
+      "Minimum Overlap (ft)"
+    ],
+    "end_before": "● Extension ladders shall be equipped"
+  }
+]

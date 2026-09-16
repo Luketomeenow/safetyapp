@@ -1,0 +1,13 @@
+[
+  {
+    "number": "20.5",
+    "page": 170,
+    "line": 7,
+    "note": "TOC typo: the TOC reads 'Remit-Required Space Entry'; the body heading is 'Permit-Required Space Entry'. Fix the TOC in the Google Doc."
+  },
+  {
+    "number": "24.3",
+    "absent": true,
+    "note": "The TOC lists 'Driving Position Inventory' but Program 24 has no such heading in the body. Content owner to add the section or remove the TOC entry."
+  }
+]

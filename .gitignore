@@ -1,0 +1,16 @@
+node_modules/
+dist/
+coverage/
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+.ingest/
+packages/evals/runs/
+.vercel/
+supabase/.temp/
+ios/*.xcodeproj
+ios/DerivedData/
+ios/.build/
+/Axxiom Safety Policies_Section.pdf
