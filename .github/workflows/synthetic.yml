@@ -1,0 +1,29 @@
+name: synthetic-check
+# Replaces a paid uptime service for the pilot: one health probe and one real cited question,
+# every 30 minutes during work hours (UTC schedule ≈ 05:00-19:00 Pacific, Mon-Sat).
+on:
+  schedule:
+    - cron: "*/30 12-23 * * 1-6"
+    - cron: "*/30 0-2 * * 2-6"
+  workflow_dispatch:
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Health
+        run: |
+          curl -fsS --max-time 30 "${{ vars.STAGING_API_URL }}/health" | tee /tmp/health.json
+          grep -q '"ok":true' /tmp/health.json
+      - name: Synthetic question
+        env:
+          SYNTHETIC_TOKEN: ${{ secrets.SYNTHETIC_TOKEN }}
+        run: |
+          START=$(date +%s%3N)
+          curl -fsS -N --max-time 120 -H "Authorization: Bearer $SYNTHETIC_TOKEN" -H "Content-Type: application/json" \
+            -X POST "${{ vars.STAGING_API_URL }}/v1/chat" \
+            -d '{"client_message_id":"synthetic-'"$GITHUB_RUN_ID"'","message":"How many people may work in the same hoistway at once?"}' > /tmp/chat.sse
+          END=$(date +%s%3N)
+          echo "elapsed_ms=$((END-START))"
+          grep -q '"kind":"answer"' /tmp/chat.sse || { echo "no answer kind"; tail -c 600 /tmp/chat.sse; exit 1; }
+          grep -A1 '^event: done' /tmp/chat.sse | grep -q '"program":{"number":12' || { echo "expected a Program 12 citation"; exit 1; }
+          [ $((END-START)) -lt 30000 ] || { echo "too slow: $((END-START)) ms"; exit 1; }

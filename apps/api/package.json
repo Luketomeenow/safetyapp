@@ -14,6 +14,10 @@
     "@axxiom/core": "workspace:*",
     "@axxiom/shared": "workspace:*",
     "@hono/node-server": "^2.1.1",
+    "@langfuse/otel": "^5.11.1",
+    "@langfuse/tracing": "^5.11.1",
+    "@opentelemetry/sdk-node": "^0.222.0",
+    "@sentry/node": "^10.75.0",
     "@supabase/supabase-js": "^2.116.0",
     "hono": "^4.13.8",
     "jose": "^6.2.12",
@@ -22,9 +26,9 @@
   },
   "devDependencies": {
     "@types/node": "^22.20.3",
+    "esbuild": "^0.28.2",
     "tsx": "^4.23.13",
     "typescript": "^5.9.0",
-    "vitest": "^5.0.1",
-    "esbuild": "^0.28.2"
+    "vitest": "^5.0.1"
   }
 }

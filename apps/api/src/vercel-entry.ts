@@ -1,6 +1,9 @@
 import { getRequestListener } from "@hono/node-server";
 import { Hono } from "hono";
 import { app } from "./app.ts";
+import { startTelemetry } from "./telemetry.ts";
+
+startTelemetry();
 
 // Routed by .vercel/output/config.json: every path reaches this function. Accept an optional
 // /api prefix so both /health and /api/health work.
