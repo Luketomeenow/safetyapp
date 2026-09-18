@@ -242,13 +242,32 @@ export async function* answerQuestion(
   const open = (params: unknown) =>
     deps.anthropic.beta.messages.stream(params as StreamParams, { signal: input.signal });
 
-  let stream: ReturnType<typeof open>;
+  // Start the request before consuming it, so an immediate failure (rejected beta header, auth,
+  // billing, rate limit) surfaces as an error event instead of a stream that never yields.
+  let stream = open(withFallbacks);
+  let openError: unknown = null;
   try {
-    stream = open(withFallbacks);
-    // Force the request to start so a rejected beta header surfaces here and can be retried without it.
-    await stream.withResponse().catch(() => undefined);
-  } catch {
+    await stream.withResponse();
+  } catch (error) {
+    openError = error;
+  }
+  if (openError !== null && deps.config.enableRefusalFallbacks && mentionsBetaHeader(openError)) {
     stream = open(baseParams);
+    try {
+      await stream.withResponse();
+      openError = null;
+    } catch (error) {
+      openError = error;
+    }
+  }
+  if (openError !== null) {
+    const mapped = mapAnthropicError(openError);
+    console.error("chat request failed to start", { code: mapped.code, alert: mapped.alert });
+    yield {
+      event: "error",
+      data: { code: mapped.code, message: mapped.message, retryable: mapped.retryable },
+    };
+    return errorResult(manualRef, conversationId, started, deps);
   }
 
   const textParts = new Map<number, string>();
