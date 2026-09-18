@@ -175,3 +175,13 @@ describe("multi-line blockquotes", () => {
     expect(check.sectionNumber).toBe("8.5");
   });
 });
+
+describe("markdown inside quotes", () => {
+  it("ignores bold markers the model adds inside a quoted line", () => {
+    const manual = fixtureManual();
+    const [q] = extractQuotes(
+      "> **Capable of withstanding** the environment to which they are exposed",
+    );
+    expect(verifyQuote(manual, q!, []).found).toBe(true);
+  });
+});
