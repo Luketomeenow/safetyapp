@@ -1,0 +1,4 @@
+// Shared build settings. Per-environment values live in Dev/Staging/Prod.xcconfig.
+// Set DEVELOPMENT_TEAM to the Apple Developer team id once the organization account exists.
+DEVELOPMENT_TEAM =
+APP_NAME = Axxiom Safety

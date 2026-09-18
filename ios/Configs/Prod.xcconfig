@@ -1,0 +1,7 @@
+#include "Base.xcconfig"
+APP_BUNDLE_ID = com.axxiomelevator.safetyassistant
+APP_DISPLAY_NAME = Axxiom Safety
+APP_ENVIRONMENT = prod
+API_BASE_URL = https:/$()/REPLACE_WITH_PRODUCTION_API_HOST
+SUPABASE_URL = https:/$()/REPLACE_WITH_PRODUCTION_PROJECT.supabase.co
+SUPABASE_ANON_KEY = REPLACE_WITH_PRODUCTION_ANON_KEY
