@@ -5,113 +5,379 @@
   "approved_by": null,
   "approved_on": null,
   "notes": "Used when a message describes an emergency in progress. Steps with source=manual quote the manual verbatim and cite the PDF page and subsection. Steps with source=proposed are NOT in the manual; the Safety Manager must approve, edit or remove them before the pilot. Contact numbers must be filled in.",
-  "call": { "label": "Call 911", "tel": "911" },
+  "call": {
+    "label": "Call 911",
+    "tel": "911"
+  },
   "contacts": [
-    { "label": "Your supervisor", "tel": "", "note": "fill in or provide per-technician" },
-    { "label": "Safety Manager", "tel": "", "note": "fill in" }
+    {
+      "label": "Your supervisor",
+      "tel": "",
+      "note": "fill in or provide per-technician"
+    },
+    {
+      "label": "Safety Manager",
+      "tel": "",
+      "note": "fill in"
+    }
   ],
   "default": {
     "headline": "Emergency: get help first",
     "steps": [
-      { "text": "Call 911 for any injury, fire, entrapment, fall, chemical exposure or electrical contact. When in doubt, call.", "source": "proposed" },
-      { "text": "Do not put yourself in danger to help.", "source": "manual", "page": 161, "section": "19.3", "quote": "The rescuer(s) are not to put themselves in danger." },
-      { "text": "Notify your supervisor as soon as it is safe to do so.", "source": "manual", "page": 204, "section": "24.10", "quote": "Immediately notify your supervisor as soon as safe to do so." },
-      { "text": "First aid kits are in company vehicles, safety bags and the Conex box.", "source": "manual", "page": 190, "section": "22.10", "quote": "First Aid kits will be located in in company vehicles, safety bags and/or in the Conex box with other Axxiom tools/materials." }
+      {
+        "text": "Call 911 for any injury, fire, entrapment, fall, chemical exposure or electrical contact. When in doubt, call.",
+        "source": "proposed"
+      },
+      {
+        "text": "Do not put yourself in danger to help.",
+        "source": "manual",
+        "page": 161,
+        "section": "19.3",
+        "quote": "The rescuer(s) are not to put themselves in danger."
+      },
+      {
+        "text": "Notify your supervisor as soon as it is safe to do so.",
+        "source": "manual",
+        "page": 204,
+        "section": "24.10",
+        "quote": "Immediately notify your supervisor as soon as safe to do so."
+      },
+      {
+        "text": "First aid kits are in company vehicles, safety bags and the Conex box.",
+        "source": "manual",
+        "page": 190,
+        "section": "22.10",
+        "quote": "First Aid kits will be located in in company vehicles, safety bags and/or in the Conex box with other Axxiom tools/materials."
+      }
     ]
   },
   "playbooks": [
     {
       "id": "heat_illness",
       "headline": "Possible heat stroke: this is a medical emergency",
-      "triggers": ["heat stroke", "stopped sweating", "confused", "passed out", "seizure", "overheated", "heat exhaustion", "dizzy in the heat", "hot skin"],
+      "triggers": [
+        "heat stroke",
+        "stopped sweating",
+        "confused",
+        "passed out",
+        "seizure",
+        "overheated",
+        "heat exhaustion",
+        "dizzy in the heat",
+        "hot skin"
+      ],
       "steps": [
-        { "text": "Call 911 immediately. Heat stroke can kill.", "source": "manual", "page": 130, "section": "15.7", "quote": "Signs include confusion, loss of consciousness, and seizures. Heat stroke is a medical emergency that may result in death! Call 911 immediately." },
-        { "text": "Move the person to a cool area, drench their clothing with cool water and fan the body.", "source": "manual", "page": 131, "section": "15.7", "quote": "For heat stroke, always remove the employee to a cool area, drench clothing with cool water and fan the body. Call 9-1-1!" },
-        { "text": "Use ice packs to lower body temperature while waiting for paramedics.", "source": "manual", "page": 131, "section": "15.7", "quote": "Use a thermometer to determine core temperature and ice packs to lower temperature while waiting on paramedics." },
-        { "text": "For heat exhaustion or cramps, get the person to a cool dry place and give cool liquids.", "source": "manual", "page": 130, "section": "15.7", "quote": "Take the employee to a cool dry place and provide cool liquids to restore body temperature." }
+        {
+          "text": "Call 911 immediately. Heat stroke can kill.",
+          "source": "manual",
+          "page": 130,
+          "section": "15.7",
+          "quote": "Signs include confusion, loss of consciousness, and seizures. Heat stroke is a medical emergency that may result in death! Call 911 immediately."
+        },
+        {
+          "text": "Move the person to a cool area, drench their clothing with cool water and fan the body.",
+          "source": "manual",
+          "page": 131,
+          "section": "15.7",
+          "quote": "For heat stroke, always remove the employee to a cool area, drench clothing with cool water and fan the body. Call 9-1-1!"
+        },
+        {
+          "text": "Use ice packs to lower body temperature while waiting for paramedics.",
+          "source": "manual",
+          "page": 131,
+          "section": "15.7",
+          "quote": "Use a thermometer to determine core temperature and ice packs to lower temperature while waiting on paramedics."
+        },
+        {
+          "text": "For heat exhaustion or cramps, get the person to a cool dry place and give cool liquids.",
+          "source": "manual",
+          "page": 130,
+          "section": "15.7",
+          "quote": "Take the employee to a cool dry place and provide cool liquids to restore body temperature."
+        }
       ]
     },
     {
       "id": "fall_suspended",
       "headline": "Fall or worker suspended in a harness",
-      "triggers": ["fell", "fall from", "hanging in harness", "suspended", "fall arrest", "dropped from"],
+      "triggers": [
+        "fell",
+        "fall from",
+        "hanging in harness",
+        "suspended",
+        "fall arrest",
+        "dropped from"
+      ],
       "steps": [
-        { "text": "If the worker is unconscious or unable to help themselves, call 911 immediately.", "source": "manual", "page": 161, "section": "19.3", "quote": "If the worker that fell is unconscious or medically disabled, 9-1-1 must be called immediately as this will require a Mechanically Aided Rescue." },
-        { "text": "Rescuers must not put themselves in danger. Raise or lower the person only with mechanical assistance, then have them evaluated for medical attention.", "source": "manual", "page": 161, "section": "19.3", "quote": "The rescuer(s) are not to put themselves in danger. The rescue team may raise or lower the victim as needed with mechanical assistance. Once retrieved, the victim should be evaluated for the need of medical attention." },
-        { "text": "Time matters: suspension trauma can cause unconsciousness, injury or death.", "source": "manual", "page": 161, "section": "19.3", "quote": "Suspension trauma is a serious medical condition that can lead to unconsciousness, injury, or death, which can occur when a worker is suspended in a harness for too long after a fall." }
+        {
+          "text": "If the worker is unconscious or unable to help themselves, call 911 immediately.",
+          "source": "manual",
+          "page": 161,
+          "section": "19.3",
+          "quote": "If the worker that fell is unconscious or medically disabled, 9-1-1 must be called immediately as this will require a Mechanically Aided Rescue."
+        },
+        {
+          "text": "Rescuers must not put themselves in danger. Raise or lower the person only with mechanical assistance, then have them evaluated for medical attention.",
+          "source": "manual",
+          "page": 161,
+          "section": "19.3",
+          "quote": "The rescuer(s) are not to put themselves in danger. The rescue team may raise or lower the victim as needed with mechanical assistance. Once retrieved, the victim should be evaluated for the need of medical attention."
+        },
+        {
+          "text": "Time matters: suspension trauma can cause unconsciousness, injury or death.",
+          "source": "manual",
+          "page": 161,
+          "section": "19.3",
+          "quote": "Suspension trauma is a serious medical condition that can lead to unconsciousness, injury, or death, which can occur when a worker is suspended in a harness for too long after a fall."
+        }
       ]
     },
     {
       "id": "electrical_contact",
       "headline": "Electrical shock",
-      "triggers": ["shocked", "electrocuted", "got shocked", "contact with live", "not breathing", "electric shock"],
+      "triggers": [
+        "shocked",
+        "electrocuted",
+        "got shocked",
+        "contact with live",
+        "not breathing",
+        "electric shock"
+      ],
       "steps": [
-        { "text": "Call 911.", "source": "proposed" },
-        { "text": "Do not touch a person who may still be in contact with energized equipment. De-energize the circuit first if you can do so safely.", "source": "proposed", "note": "Not in the manual. Program 7.5 (page 50) describes shock effects but gives no rescue steps." },
-        { "text": "Shock victims may be dazed, lose memory, or have a seizure; injuries can develop later. Get medical evaluation.", "source": "manual", "page": 50, "section": "7.5", "note": "Paraphrase of 7.5 Electrical Shock Effects; no verbatim quote used." }
+        {
+          "text": "Call 911.",
+          "source": "proposed"
+        },
+        {
+          "text": "Do not touch a person who may still be in contact with energized equipment. De-energize the circuit first if you can do so safely.",
+          "source": "proposed",
+          "note": "Not in the manual. Program 7.5 (page 50) describes shock effects but gives no rescue steps."
+        },
+        {
+          "text": "Shock victims may be dazed, lose memory, or have a seizure; injuries can develop later. Get medical evaluation.",
+          "source": "manual",
+          "page": 50,
+          "section": "7.5",
+          "note": "Paraphrase of 7.5 Electrical Shock Effects; no verbatim quote used."
+        }
       ]
     },
     {
       "id": "gas_leak_fire",
       "headline": "Gas leak or fire",
-      "triggers": ["fire", "smoke", "leaking cylinder", "gas leak", "smell gas", "flames"],
+      "triggers": [
+        "fire",
+        "smoke",
+        "leaking cylinder",
+        "gas leak",
+        "smell gas",
+        "flames"
+      ],
       "steps": [
-        { "text": "Evacuate the area immediately.", "source": "manual", "page": 18, "section": "1.7", "quote": "Evacuate the area immediately." },
-        { "text": "Notify the supervisor and call 911.", "source": "manual", "page": 18, "section": "1.7", "quote": "Notify the supervisor and call 911." },
-        { "text": "Do not try to move leaking cylinders without PPE and training.", "source": "manual", "page": 18, "section": "1.7", "quote": "Do not attempt to move leaking cylinders without PPE and training." }
+        {
+          "text": "Evacuate the area immediately.",
+          "source": "manual",
+          "page": 18,
+          "section": "1.7",
+          "quote": "Evacuate the area immediately."
+        },
+        {
+          "text": "Notify the supervisor and call 911.",
+          "source": "manual",
+          "page": 18,
+          "section": "1.7",
+          "quote": "Notify the supervisor and call 911."
+        },
+        {
+          "text": "Do not try to move leaking cylinders without PPE and training.",
+          "source": "manual",
+          "page": 18,
+          "section": "1.7",
+          "quote": "Do not attempt to move leaking cylinders without PPE and training."
+        }
       ]
     },
     {
       "id": "confined_space",
       "headline": "Someone down in a confined space",
-      "triggers": ["confined space", "collapsed in the pit", "passed out in the", "can't breathe in", "fumes in the pit"],
+      "triggers": [
+        "confined space",
+        "collapsed in the pit",
+        "passed out in the",
+        "can't breathe in",
+        "fumes in the pit"
+      ],
       "steps": [
-        { "text": "Call 911. Do not enter the space to attempt a rescue.", "source": "proposed", "note": "Consistent with the policy quoted below; the manual does not state rescue steps for employees." },
-        { "text": "Axxiom employees never enter permit-required confined spaces.", "source": "manual", "page": 169, "section": "20.3", "quote": "AXXIOM ELEVATOR EMPLOYEES ARE NOT TO ENTER PERMIT-REQUIRED CONFINED SPACES FOR ANY REASON." },
-        { "text": "Notify your supervisor and the Safety Manager.", "source": "proposed" }
+        {
+          "text": "Call 911. Do not enter the space to attempt a rescue.",
+          "source": "proposed",
+          "note": "Consistent with the policy quoted below; the manual does not state rescue steps for employees."
+        },
+        {
+          "text": "Axxiom employees never enter permit-required confined spaces.",
+          "source": "manual",
+          "page": 169,
+          "section": "20.3",
+          "quote": "AXXIOM ELEVATOR EMPLOYEES ARE NOT TO ENTER PERMIT-REQUIRED CONFINED SPACES FOR ANY REASON."
+        },
+        {
+          "text": "Notify your supervisor and the Safety Manager.",
+          "source": "proposed"
+        }
       ]
     },
     {
       "id": "chemical_exposure",
       "headline": "Chemical in eyes or on skin",
-      "triggers": ["chemical in my eye", "splashed", "burning eyes", "chemical on", "spilled on me", "hydraulic oil in eye"],
+      "triggers": [
+        "chemical in my eye",
+        "splashed",
+        "burning eyes",
+        "chemical on",
+        "spilled on me",
+        "hydraulic oil in eye"
+      ],
       "steps": [
-        { "text": "Flush eyes or skin right away at the nearest eyewash or drench facility, and keep flushing.", "source": "manual", "page": 190, "section": "22.10", "quote": "Where an employee of Axxiom Elevator may be exposed to injurious corrosive materials, suitable facilities for quick drenching or flushing of the eyes and body will be provided within the work area for immediate emergency use." },
-        { "text": "Check the product's Safety Data Sheet, Section 4 (First-aid measures), and call 911 if symptoms are serious.", "source": "proposed", "note": "SDS section list is in Program 3.1 (page 20)." },
-        { "text": "Notify your supervisor.", "source": "proposed" }
+        {
+          "text": "Flush eyes or skin right away at the nearest eyewash or drench facility, and keep flushing.",
+          "source": "manual",
+          "page": 190,
+          "section": "22.10",
+          "quote": "Where an employee of Axxiom Elevator may be exposed to injurious corrosive materials, suitable facilities for quick drenching or flushing of the eyes and body will be provided within the work area for immediate emergency use."
+        },
+        {
+          "text": "Check the product's Safety Data Sheet, Section 4 (First-aid measures), and call 911 if symptoms are serious.",
+          "source": "proposed",
+          "note": "SDS section list is in Program 3.1 (page 20)."
+        },
+        {
+          "text": "Notify your supervisor.",
+          "source": "proposed"
+        }
       ]
     },
     {
       "id": "bloodborne_exposure",
       "headline": "Exposure to blood or body fluids",
-      "triggers": ["blood on", "needle stick", "exposed to blood", "bleeding on me", "body fluids"],
+      "triggers": [
+        "blood on",
+        "needle stick",
+        "exposed to blood",
+        "bleeding on me",
+        "body fluids"
+      ],
       "steps": [
-        { "text": "Wash the exposed skin with soap and running water as soon as you can.", "source": "manual", "page": 181, "section": "22.3", "quote": "employees are to wash their hands with soap and running water as soon as feasible." },
-        { "text": "Report the exposure incident to the Safety Manager immediately.", "source": "manual", "page": 185, "section": "22.6", "quote": "Employees must report all exposure incidents to the Safety Manager immediately or as soon as possible after the occurrence." },
-        { "text": "You will receive a confidential post-exposure evaluation and follow-up.", "source": "manual", "page": 185, "section": "22.6", "quote": "Following a report of an exposure incident, the exposed employee shall immediately receive a confidential post-exposure evaluation and follow up." }
+        {
+          "text": "Wash the exposed skin with soap and running water as soon as you can.",
+          "source": "manual",
+          "page": 181,
+          "section": "22.3",
+          "quote": "employees are to wash their hands with soap and running water as soon as feasible."
+        },
+        {
+          "text": "Report the exposure incident to the Safety Manager immediately.",
+          "source": "manual",
+          "page": 185,
+          "section": "22.6",
+          "quote": "Employees must report all exposure incidents to the Safety Manager immediately or as soon as possible after the occurrence."
+        },
+        {
+          "text": "You will receive a confidential post-exposure evaluation and follow-up.",
+          "source": "manual",
+          "page": 185,
+          "section": "22.6",
+          "quote": "Following a report of an exposure incident, the exposed employee shall immediately receive a confidential post-exposure evaluation and follow up."
+        }
       ]
     },
     {
       "id": "vehicle_accident",
       "headline": "Vehicle accident",
-      "triggers": ["car accident", "crashed", "rear-ended", "hit another", "vehicle accident", "wreck"],
+      "triggers": [
+        "car accident",
+        "crashed",
+        "rear-ended",
+        "hit another",
+        "vehicle accident",
+        "wreck"
+      ],
       "steps": [
-        { "text": "Follow the driver emergency actions from training. If in doubt, call 911.", "source": "manual", "page": 204, "section": "24.10", "quote": "In case of an emergency, follow the driver emergency actions covered in the training. If in doubt, call 9-1-1." },
-        { "text": "Help the injured.", "source": "manual", "page": 204, "section": "24.10", "quote": "Render aid or assistance to the injured." },
-        { "text": "Notify law enforcement immediately if anyone is hurt or property is damaged.", "source": "manual", "page": 204, "section": "24.10", "quote": "Notify the nearest law enforcement agency immediately if an accident involves a fatality, injury, or property damage." },
-        { "text": "Do not admit fault or discuss the accident except with Axxiom managers, the Safety Manager or law enforcement.", "source": "manual", "page": 204, "section": "24.10", "quote": "Do not admit fault and do not discuss the accident with anyone except Axxiom Elevator managers and supervisors, the Safety Manager, or law enforcement authorities." },
-        { "text": "Notify your supervisor as soon as it is safe.", "source": "manual", "page": 204, "section": "24.10", "quote": "Immediately notify your supervisor as soon as safe to do so." }
+        {
+          "text": "Follow the driver emergency actions from training. If in doubt, call 911.",
+          "source": "manual",
+          "page": 204,
+          "section": "24.10",
+          "quote": "In case of an emergency, follow the driver emergency actions covered in the training. If in doubt, call 9-1-1."
+        },
+        {
+          "text": "Help the injured.",
+          "source": "manual",
+          "page": 204,
+          "section": "24.10",
+          "quote": "Render aid or assistance to the injured."
+        },
+        {
+          "text": "Notify law enforcement immediately if anyone is hurt or property is damaged.",
+          "source": "manual",
+          "page": 204,
+          "section": "24.10",
+          "quote": "Notify the nearest law enforcement agency immediately if an accident involves a fatality, injury, or property damage."
+        },
+        {
+          "text": "Do not admit fault or discuss the accident except with Axxiom managers, the Safety Manager or law enforcement.",
+          "source": "manual",
+          "page": 204,
+          "section": "24.10",
+          "quote": "Do not admit fault and do not discuss the accident with anyone except Axxiom Elevator managers and supervisors, the Safety Manager, or law enforcement authorities."
+        },
+        {
+          "text": "Notify your supervisor as soon as it is safe.",
+          "source": "manual",
+          "page": 204,
+          "section": "24.10",
+          "quote": "Immediately notify your supervisor as soon as safe to do so."
+        }
       ]
     },
     {
       "id": "hoistway_pit_injury",
       "headline": "Injury or entrapment in the hoistway, pit or car top",
-      "triggers": ["trapped", "stuck in the pit", "stuck in the hoistway", "pinned", "crushed", "caught between", "car moved on", "someone fell down the hoistway"],
+      "triggers": [
+        "trapped",
+        "stuck in the pit",
+        "stuck in the hoistway",
+        "pinned",
+        "crushed",
+        "caught between",
+        "car moved on",
+        "someone fell down the hoistway",
+        "in the pit",
+        "in the hoistway",
+        "on the car top",
+        "down the shaft",
+        "unconscious in"
+      ],
       "steps": [
-        { "text": "Call 911.", "source": "proposed" },
-        { "text": "If you are trained and it is safe, stop the equipment with the emergency stop switch before approaching.", "source": "proposed", "note": "Manual references: Top of Car Inspection Emergency Stop (12.3, page 90) and landing pit Emergency Stop switch (12.13, page 101)." },
-        { "text": "Do not put yourself in danger to reach the person.", "source": "manual", "page": 161, "section": "19.3", "quote": "The rescuer(s) are not to put themselves in danger." },
-        { "text": "Notify your supervisor and the Safety Manager.", "source": "proposed" }
+        {
+          "text": "Call 911.",
+          "source": "proposed"
+        },
+        {
+          "text": "If you are trained and it is safe, stop the equipment with the emergency stop switch before approaching.",
+          "source": "proposed",
+          "note": "Manual references: Top of Car Inspection Emergency Stop (12.3, page 90) and landing pit Emergency Stop switch (12.13, page 101)."
+        },
+        {
+          "text": "Do not put yourself in danger to reach the person.",
+          "source": "manual",
+          "page": 161,
+          "section": "19.3",
+          "quote": "The rescuer(s) are not to put themselves in danger."
+        },
+        {
+          "text": "Notify your supervisor and the Safety Manager.",
+          "source": "proposed"
+        }
       ]
     }
   ]
