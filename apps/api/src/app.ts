@@ -4,6 +4,7 @@ import { conversations } from "./routes/conversations.ts";
 import { feedback } from "./routes/feedback.ts";
 import { manual } from "./routes/manual.ts";
 import { system } from "./routes/system.ts";
+import { telemetryEnabled } from "./telemetry.ts";
 
 export const app = new Hono();
 
@@ -19,6 +20,7 @@ app.get("/__debug", (c) =>
     path: c.req.path,
     env: process.env.APP_ENV ?? null,
     region: process.env.VERCEL_REGION ?? null,
+    tracing: telemetryEnabled(),
   }),
 );
 app.route("/", system);
