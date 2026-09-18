@@ -12,14 +12,38 @@ final class WalkthroughTests: XCTestCase {
     }
 
     /// iOS offers to save the password after a sign-in; the sheet belongs to SpringBoard and blocks taps.
-    private func dismissSystemPasswordPrompt() {
+    private func dismissSystemPasswordPrompt(timeout: TimeInterval = 3) {
         let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
-        for label in ["Not Now", "Not now"] {
-            let button = springboard.buttons[label]
-            if button.waitForExistence(timeout: 8) {
-                button.tap()
+        let deadline = Date().addingTimeInterval(timeout)
+        repeat {
+            for label in ["Not Now", "Not now"] where springboard.buttons[label].exists {
+                springboard.buttons[label].tap()
                 return
             }
+            usleep(300_000)
+        } while Date() < deadline
+    }
+
+    /// Taps an element until it goes away, dismissing any SpringBoard sheet that stole the tap.
+    private func tapUntilGone(_ element: XCUIElement, attempts: Int = 4) {
+        for _ in 0 ..< attempts {
+            dismissSystemPasswordPrompt()
+            guard element.exists else { return }
+            if element.isHittable { element.tap() }
+            usleep(1_500_000)
+            if !element.exists { return }
+        }
+    }
+
+    /// The keyboard (and iOS's QuickType tutorial card) covers the tab bar.
+    private func dismissKeyboard() {
+        if app.buttons["Continue"].exists { app.buttons["Continue"].tap() }
+        guard app.keyboards.element.exists else { return }
+        app.scrollViews.firstMatch.swipeDown()
+        usleep(600_000)
+        if app.keyboards.element.exists {
+            app.navigationBars.firstMatch.tap()
+            usleep(600_000)
         }
     }
 
@@ -38,9 +62,12 @@ final class WalkthroughTests: XCTestCase {
         XCTAssertFalse(password.isEmpty, "PILOT_PASSWORD was not passed to the test runner")
         app.launch()
 
-        // 1. Sign in
+        // 1. Sign in (the app may already hold a session from a previous run)
         let emailField = app.textFields["email-field"]
-        XCTAssertTrue(emailField.waitForExistence(timeout: 20), "sign-in screen did not appear")
+        let alreadySignedIn = !emailField.waitForExistence(timeout: 20)
+        if alreadySignedIn {
+            shoot("01-restored-session")
+        } else {
         shoot("01-sign-in")
         emailField.tap()
         emailField.typeText(email)
@@ -52,12 +79,15 @@ final class WalkthroughTests: XCTestCase {
         XCTAssertTrue(signIn.isEnabled, "sign-in button stayed disabled, so a field is empty")
         signIn.tap()
         dismissSystemPasswordPrompt()
+        }
 
-        // 2. Disclaimer gate
+        // 2. Disclaimer gate (skipped when this account already accepted it)
+        dismissSystemPasswordPrompt()
         let accept = app.buttons["accept-disclaimer"]
-        XCTAssertTrue(accept.waitForExistence(timeout: 30), "disclaimer did not appear after sign-in")
-        shoot("02-disclaimer")
-        accept.tap()
+        if accept.waitForExistence(timeout: 30) {
+            shoot("02-disclaimer")
+            tapUntilGone(accept)
+        }
 
         // 3. Chat screen
         let question = app.textFields["question-field"]
@@ -80,14 +110,16 @@ final class WalkthroughTests: XCTestCase {
 
         // 5. Manual tab: list, then search (works offline)
         dismissSystemPasswordPrompt()
+        dismissKeyboard()
         app.tabBars.buttons["Manual"].tap()
         XCTAssertTrue(app.staticTexts["Ladder and Stairway Safety"].waitForExistence(timeout: 60), "manual programs did not load")
         shoot("06-manual-programs")
         let search = app.searchFields.firstMatch
         search.tap()
         search.typeText("lockout point")
-        sleep(2)
+        sleep(3)
         shoot("07-manual-search")
+        dismissKeyboard()
 
         // 6. Open a search hit in the reader with the passage highlighted
         let firstHit = app.cells.element(boundBy: 1)

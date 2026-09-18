@@ -7,6 +7,7 @@ struct SettingsScreen: View {
     @AppStorage("preferOnDeviceDictation") private var preferOnDevice = true
     @State private var showDisclaimer = false
     @State private var confirmSignOut = false
+    @State private var showDataRequest = false
 
     var body: some View {
         NavigationStack {
@@ -32,6 +33,15 @@ struct SettingsScreen: View {
                     Toggle("Read answers aloud automatically", isOn: $autoReadAloud)
                     Toggle("Keep dictation on this device", isOn: $preferOnDevice)
                 }
+                Section("Privacy") {
+                    if let url = AppEnvironment.current.privacyPolicyURL {
+                        Link("Privacy policy", destination: url).frame(minHeight: 44)
+                    }
+                    Button("Request my data or account deletion") { showDataRequest = true }
+                        .frame(minHeight: 44)
+                    Text("Questions and answers are kept as safety records. Your account is issued and removed by Axxiom.")
+                        .font(.footnote).foregroundStyle(.secondary)
+                }
                 Section("About") {
                     LabeledContent("App version", value: (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "") + " (\(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""))")
                     if !AppEnvironment.current.isProduction { LabeledContent("Environment", value: AppEnvironment.current.name) }
@@ -40,6 +50,12 @@ struct SettingsScreen: View {
             }
             .navigationTitle("Settings")
             .sheet(isPresented: $showDisclaimer) { DisclaimerText() }
+            .confirmationDialog("Your Axxiom account and safety records are managed by the company.", isPresented: $showDataRequest, titleVisibility: .visible) {
+                Link("Email the Safety Manager", destination: URL(string: "mailto:\(AppEnvironment.current.supportEmail)?subject=Safety%20Assistant%20data%20request")!)
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("To see the data held about you, or to have your account and chat history deleted, email the Safety Manager. Requests are actioned within 30 days.")
+            }
             .confirmationDialog("Sign out and remove chat history from this device?", isPresented: $confirmSignOut, titleVisibility: .visible) {
                 Button("Sign out", role: .destructive) {
                     Task { await session.signOut { PersistenceController.shared.wipeConversations() } }

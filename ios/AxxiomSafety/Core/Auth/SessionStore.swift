@@ -20,6 +20,15 @@ final class SessionStore: TokenProviding {
     @ObservationIgnored lazy var api: APIClient = APIClient(baseURL: AppEnvironment.current.apiBaseURL, tokens: self)
 
     func restore() async {
+        // UI tests launch with -resetState and expect a signed-out app.
+        if ProcessInfo.processInfo.arguments.contains("-resetState") {
+            await provider.signOut()
+            for key in UserDefaults.standard.dictionaryRepresentation().keys where key.hasPrefix("acceptedDisclaimer.") {
+                UserDefaults.standard.removeObject(forKey: key)
+            }
+            state = .signedOut
+            return
+        }
         if let id = await provider.restore() {
             state = .signedIn(identifier: id)
             disclaimerAccepted = UserDefaults.standard.string(forKey: "acceptedDisclaimer.\(id)") == disclaimerVersion

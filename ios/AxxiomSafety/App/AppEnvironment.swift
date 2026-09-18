@@ -6,6 +6,8 @@ struct AppEnvironment: Sendable {
     let apiBaseURL: URL
     let supabaseURL: URL
     let supabaseAnonKey: String
+    let privacyPolicyURL: URL?
+    let supportEmail: String
 
     static let current: AppEnvironment = {
         let info = Bundle.main.infoDictionary ?? [:]
@@ -14,7 +16,9 @@ struct AppEnvironment: Sendable {
             name: string("AppEnvironment").isEmpty ? "dev" : string("AppEnvironment"),
             apiBaseURL: URL(string: string("APIBaseURL")) ?? URL(string: "https://localhost")!,
             supabaseURL: URL(string: string("SupabaseURL")) ?? URL(string: "https://localhost")!,
-            supabaseAnonKey: string("SupabaseAnonKey")
+            supabaseAnonKey: string("SupabaseAnonKey"),
+            privacyPolicyURL: URL(string: string("PrivacyPolicyURL")),
+            supportEmail: string("SupportEmail").isEmpty ? "safety@axxiomelevator.com" : string("SupportEmail")
         )
     }()
 

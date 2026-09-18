@@ -5,3 +5,6 @@ APP_ENVIRONMENT = staging
 API_BASE_URL = https:/$()/axxiom-safety-api-staging.vercel.app
 SUPABASE_URL = https:/$()/qgwnbnrvtyodaveexnkq.supabase.co
 SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnd25ibnJ2dHlvZGF2ZWV4bmtxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk2OTg2NzAsImV4cCI6MjEwNTI3NDY3MH0.UsYudx3fy52gw3lt4CybEKQWsF-DIvVwYuaScqd-34g
+
+PRIVACY_POLICY_URL = https:/$()/axxiomelevator.com/safety-assistant-privacy
+SUPPORT_EMAIL = safety@axxiomelevator.com

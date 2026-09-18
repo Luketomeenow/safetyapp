@@ -66,6 +66,8 @@ struct EmergencySheet: View {
 
                     Text("Do not put yourself in danger to help. Notify your supervisor as soon as it is safe, and report incidents through the official reporting procedure.")
                         .font(.footnote).foregroundStyle(.secondary)
+                    Text("These steps are quoted from Axxiom's safety manual. They are not medical advice. In a medical emergency call 911 and follow the responder's instructions.")
+                        .font(.footnote).foregroundStyle(.secondary)
                 }
                 .padding(16)
             }

@@ -17,10 +17,11 @@
 	<array><string>UIInterfaceOrientationPortrait</string></array>
 	<key>NSMicrophoneUsageDescription</key><string>Dictate a safety question with your voice.</string>
 	<key>NSSpeechRecognitionUsageDescription</key><string>Turn your dictated question into text, on this device when possible.</string>
-	<key>NSFaceIDUsageDescription</key><string>Unlock the Safety Assistant on this device.</string>
 	<key>APIBaseURL</key><string>$(API_BASE_URL)</string>
 	<key>SupabaseURL</key><string>$(SUPABASE_URL)</string>
 	<key>SupabaseAnonKey</key><string>$(SUPABASE_ANON_KEY)</string>
 	<key>AppEnvironment</key><string>$(APP_ENVIRONMENT)</string>
+	<key>PrivacyPolicyURL</key><string>$(PRIVACY_POLICY_URL)</string>
+	<key>SupportEmail</key><string>$(SUPPORT_EMAIL)</string>
 </dict>
 </plist>

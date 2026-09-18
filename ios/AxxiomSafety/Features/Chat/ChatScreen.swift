@@ -79,6 +79,7 @@ struct ChatConversationView: View {
                     .padding(.vertical, 12)
                 }
                 .defaultScrollAnchor(.bottom)
+                .scrollDismissesKeyboard(.interactively)
                 .onChange(of: model.messages.last?.text) { _, _ in
                     if let last = model.messages.last { proxy.scrollTo(last.id, anchor: .bottom) }
                 }
