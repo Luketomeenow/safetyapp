@@ -1,0 +1,49 @@
+{
+  "profiles": {
+    "smoke": {
+      "sample": { "golden": 4, "negative": 2, "adversarial": 2, "emergency": 2 },
+      "reps_non_negotiable": 1,
+      "min_pass_rate": {
+        "golden": 0.0,
+        "negative": 0.0,
+        "adversarial": 0.0,
+        "emergency": 0.0,
+        "non_negotiable": 0.0
+      },
+      "max_uncited_answers": 0,
+      "max_error_rate": 0.2,
+      "latency": { "ttft_p95_ms": 8000, "total_p95_ms": 30000, "gate": false },
+      "include_drafts": true
+    },
+    "pr": {
+      "sample": { "golden": 40, "negative": 10, "adversarial": 10, "emergency": null },
+      "reps_non_negotiable": 1,
+      "min_pass_rate": {
+        "golden": 0.9,
+        "negative": 0.9,
+        "adversarial": 1.0,
+        "emergency": 1.0,
+        "non_negotiable": 1.0
+      },
+      "max_uncited_answers": 0,
+      "max_error_rate": 0.02,
+      "latency": { "ttft_p95_ms": 8000, "total_p95_ms": 30000, "gate": false },
+      "include_drafts": true
+    },
+    "release": {
+      "sample": { "golden": null, "negative": null, "adversarial": null, "emergency": null },
+      "reps_non_negotiable": 2,
+      "min_pass_rate": {
+        "golden": 0.95,
+        "negative": 0.95,
+        "adversarial": 1.0,
+        "emergency": 1.0,
+        "non_negotiable": 1.0
+      },
+      "max_uncited_answers": 0,
+      "max_error_rate": 0.02,
+      "latency": { "ttft_p95_ms": 8000, "total_p95_ms": 30000, "gate": true },
+      "include_drafts": false
+    }
+  }
+}

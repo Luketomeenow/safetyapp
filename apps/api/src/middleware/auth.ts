@@ -13,6 +13,11 @@ async function verifyToken(token: string): Promise<{ issuer: string; subject: st
   if (devToken && token === devToken && process.env.APP_ENV !== "production") {
     return { issuer: "dev", subject: "dev-user" };
   }
+  // Monitoring (Checkly, deploy smoke) authenticates with a dedicated long random token.
+  const syntheticToken = process.env.SYNTHETIC_TOKEN;
+  if (syntheticToken && syntheticToken.length >= 32 && token === syntheticToken) {
+    return { issuer: "synthetic", subject: "monitor" };
+  }
   const options = { ...(issuer ? { issuer } : {}), ...(audience ? { audience } : {}) };
   if (process.env.AUTH_JWKS_URL) {
     jwks ??= createRemoteJWKSet(new URL(process.env.AUTH_JWKS_URL));
