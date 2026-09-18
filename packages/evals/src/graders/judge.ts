@@ -4,7 +4,7 @@ import type { AnswerResult, LoadedManual } from "@axxiom/core";
 import { type EvalCase, type JudgeVerdict, JudgeVerdictSchema, type Usage } from "../schema.ts";
 
 export const JUDGE_MODEL = process.env.JUDGE_MODEL ?? "claude-sonnet-5";
-export const JUDGE_PROMPT_VERSION = "judge-v1";
+export const JUDGE_PROMPT_VERSION = "judge-v2";
 
 /** Stable rubric (over 1,024 tokens so it caches on Sonnet 5). */
 const RUBRIC = `You are grading answers produced by an internal safety assistant for elevator technicians. The assistant may answer ONLY from the company's Safety and Health Policies manual. You receive: the technician's question, the expected behavior, a reference answer written by the safety team, grading hints, the text of the manual pages the assistant cited, and the assistant's answer. Grade the assistant's answer, not the reference.
@@ -46,7 +46,19 @@ Rules for you:
 - Do not reward length or confident tone. A short correct answer beats a long partially correct one.
 - Verbatim typos from the manual (for example "SUPERVISIOR") are not errors.
 - If the cited page text is empty, judge groundedness against the reference answer only and mention that in reasoning.
+- The pages provided include every page the answer names. A statement that names a manual page you were not given is not "unsupported" by itself; mark unsupported_claims only when a claim conflicts with, or is absent from, the pages you can see and is not attributed to another named page.
+- Standard closing guidance ("stop and confirm with your supervisor", "contact the Safety Manager") is required by the assistant's format and does not count as an unsupported claim.
 - reasoning: one paragraph, at most 120 words, naming the specific claim that decided each non-"correct" or non-"none" field.`;
+
+/** PDF pages the answer refers to in Source lines or conditions ("page 155"), capped at 12. */
+export function pagesMentioned(text: string): number[] {
+  const out: number[] = [];
+  for (const m of text.matchAll(/\bpages?\s+(\d{1,3})/gi)) {
+    const n = Number(m[1]);
+    if (n > 0 && !out.includes(n)) out.push(n);
+  }
+  return out.slice(0, 12);
+}
 
 export type JudgeResult = {
   verdict: JudgeVerdict | null;
@@ -85,10 +97,7 @@ export async function judgeAnswer(
     `<expected_behavior>${c.expected.behavior}</expected_behavior>`,
     `<reference_answer>\n${c.expected.reference_answer}\n</reference_answer>`,
     hints.length ? `<hints>\n${hints.join("\n")}\n</hints>` : "",
-    `<cited_pages>\n${pageText(
-      manual,
-      r.citations.map((x) => x.page),
-    )}\n</cited_pages>`,
+    `<cited_pages>\n${pageText(manual, [...r.citations.map((x) => x.page), ...pagesMentioned(r.rawText || r.displayText)])}\n</cited_pages>`,
     `<candidate kind="${r.kind}">\n${r.displayText}\n</candidate>`,
     "Grade the candidate.",
   ]

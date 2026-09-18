@@ -43,6 +43,7 @@ export function extractQuotes(body: string): ParsedQuote[] {
       .map((l) =>
         l
           .replace(/^\s*[\u2022\u25CF\u25CB\u25AA\u25A0\u2023\u25E6\-*]+\s*/, "")
+          .replace(/\*\*|__|(?<!\w)[*_](?=\w)|(?<=\w)[*_](?!\w)/g, "")
           .replace(/\s+/g, " ")
           .trim(),
       )
