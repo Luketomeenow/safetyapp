@@ -1,0 +1,28 @@
+{
+  "name": "@axxiom/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/local.ts",
+    "start": "tsx src/local.ts",
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.126.0",
+    "@axxiom/core": "workspace:*",
+    "@axxiom/shared": "workspace:*",
+    "@hono/node-server": "^2.1.1",
+    "@supabase/supabase-js": "^2.116.0",
+    "hono": "^4.13.8",
+    "jose": "^6.2.12",
+    "postgres": "^3.4.9",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.3",
+    "tsx": "^4.23.13",
+    "typescript": "^5.9.0",
+    "vitest": "^5.0.1"
+  }
+}

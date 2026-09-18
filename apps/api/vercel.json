@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": { "api/**/*.ts": { "maxDuration": 300, "memory": 1024 } },
+  "crons": [
+    { "path": "/internal/cache-keepalive", "schedule": "0,45 12-23 * * 1-6" },
+    { "path": "/internal/cache-keepalive", "schedule": "0,45 0-2 * * 2-6" }
+  ]
+}
