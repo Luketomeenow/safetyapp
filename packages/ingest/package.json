@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "@axxiom/shared": "workspace:*",
+    "@supabase/supabase-js": "^2.116.0",
+    "postgres": "^3.4.9",
     "zod": "^4.6.5"
   },
   "devDependencies": {

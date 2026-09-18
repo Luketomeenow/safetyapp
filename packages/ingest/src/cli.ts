@@ -1,13 +1,19 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { parseArgs } from "node:util";
+import { activateVersion, writeApproval } from "./activate.ts";
 import type { BlockPage } from "./blocks.ts";
+import { loadEnv } from "./env.ts";
+import { publishVersion } from "./publish.ts";
 import { runIngest } from "./run.ts";
 
 const USAGE = `Usage:
   ingest run --pdf <file> --version-id <id> [--slug axxiom-s2] [--effective-date YYYY-MM-DD]
              [--corpus-dir <dir>] [--out-dir .ingest] [--expect-pages N] [--included-docs section-2]
   ingest inspect --version-id <id> --page N [--out-dir .ingest] [--raw]
+  ingest publish --version-id <id> --pdf <file> [--force]        (needs DATABASE_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+  ingest approve --version-id <id> --by "<name>" [--note "..."]   (writes corpus/<slug>/<version>/review/approval.json)
+  ingest activate --version-id <id>                               (needs DATABASE_URL)
 `;
 
 // pnpm forwards a literal "--" when invoked as `pnpm ingest -- run ...`; drop it so options still parse.
@@ -27,6 +33,9 @@ const { values, positionals } = parseArgs({
     "included-docs": { type: "string", default: "section-2" },
     page: { type: "string" },
     raw: { type: "boolean", default: false },
+    force: { type: "boolean", default: false },
+    by: { type: "string" },
+    note: { type: "string" },
   },
 });
 
@@ -43,8 +52,58 @@ function require(name: "pdf" | "version-id" | "page"): string {
   return v;
 }
 
+function corpusDirFor(versionId: string): string {
+  const slug = values.slug ?? "axxiom-s2";
+  const versionDir = versionId.startsWith(`${slug}-`)
+    ? versionId.slice(slug.length + 1)
+    : versionId;
+  return resolve(values["corpus-dir"] ?? path.join("corpus", slug, versionDir));
+}
+
 async function main(): Promise<void> {
   const command = positionals[0];
+  loadEnv(repoRoot);
+  const outDir = resolve(values["out-dir"] ?? ".ingest");
+  if (command === "publish") {
+    const versionId = require("version-id");
+    const result = await publishVersion({
+      versionId,
+      outDir,
+      corpusDir: corpusDirFor(versionId),
+      pdfPath: resolve(require("pdf")),
+      force: values.force ?? false,
+    });
+    process.stdout.write(
+      `published ${versionId}: ${result.pages} pages, ${result.sections} sections, storage ${result.storage_prefix}\n`,
+    );
+    return;
+  }
+  if (command === "approve") {
+    const versionId = require("version-id");
+    if (!values.by) {
+      process.stderr.write("Missing --by\n");
+      process.exit(2);
+    }
+    const approval = await writeApproval(
+      corpusDirFor(versionId),
+      versionId,
+      outDir,
+      values.by,
+      values.note,
+    );
+    process.stdout.write(
+      `approval written for ${versionId} (pages ${approval.pages_sha256.slice(0, 12)}...) by ${approval.approved_by}\n`,
+    );
+    return;
+  }
+  if (command === "activate") {
+    const versionId = require("version-id");
+    const result = await activateVersion(corpusDirFor(versionId), versionId);
+    process.stdout.write(
+      `${versionId} is now active${result.retired ? `; retired ${result.retired}` : ""}\n`,
+    );
+    return;
+  }
   if (command === "run") {
     const versionId = require("version-id");
     const slug = values.slug ?? "axxiom-s2";
