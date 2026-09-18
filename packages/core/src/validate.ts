@@ -9,24 +9,28 @@ export const MARKERS: Record<string, ResponseKind> = {
 };
 
 /** Splits the first line off the model's text and maps it to a response kind. */
+const MARKER_RE = /^\s*(\[\[AXX:(ANSWER|NOT_COVERED|OUT_OF_SCOPE|EMERGENCY)\]\])\s*/;
+
+/** Reads the leading marker (alone on the first line or followed by text) and strips it. */
 export function parseMarker(text: string): { kind: ResponseKind | null; body: string } {
-  const trimmed = text.replace(/^\s+/, "");
-  const newline = trimmed.indexOf("\n");
-  const first = (newline === -1 ? trimmed : trimmed.slice(0, newline)).trim();
-  const kind = MARKERS[first] ?? null;
-  if (!kind) return { kind: null, body: text };
-  return { kind, body: newline === -1 ? "" : trimmed.slice(newline + 1).replace(/^\s+/, "") };
+  const m = MARKER_RE.exec(text);
+  if (!m?.[1]) return { kind: null, body: text };
+  const kind = MARKERS[m[1]] ?? null;
+  return { kind, body: text.slice(m[0].length).replace(/^\s+/, "") };
 }
 
 export type ParsedQuote = {
   text: string;
+  /** Each blockquote line's [...]-separated fragments; every line must be found on the same page. */
+  lines: string[][];
   fragments: string[];
   sourcePage: number | null;
   sourceProgram: number | null;
   sourceSection: string | null;
 };
 
-const SOURCE_RE = /Source:\s*Program\s+(\d+)[^\n]*?(?:,\s*(\d+\.\d+)\b[^\n]*?)?,\s*page\s+(\d+)/i;
+const SOURCE_RE =
+  /Source:\s*Program\s+(\d+)[^\n]*?(?:,\s*(\d+\.\d+)\b[^\n]*?)?,?\s*pages?\s+(\d+)/i;
 
 /** Blockquotes from the "Policy text" part, each with the Source line that follows it. */
 export function extractQuotes(body: string): ParsedQuote[] {
@@ -35,14 +39,25 @@ export function extractQuotes(body: string): ParsedQuote[] {
   let current: string[] = [];
   const flush = (sourceLine: string | null) => {
     if (current.length === 0) return;
-    const text = current.join(" ").replace(/\s+/g, " ").trim();
+    const cleaned = current
+      .map((l) =>
+        l
+          .replace(/^\s*[\u2022\u25CF\u25CB\u25AA\u25A0\u2023\u25E6\-*]+\s*/, "")
+          .replace(/\s+/g, " ")
+          .trim(),
+      )
+      .filter((l) => l.length > 0);
+    const text = cleaned.join(" ");
     const m = sourceLine ? SOURCE_RE.exec(sourceLine) : null;
+    const split = (t: string) =>
+      t
+        .split(/\[\s*\.\.\.\s*\]|\u2026/)
+        .map((f) => f.trim())
+        .filter((f) => f.length > 0);
     quotes.push({
       text,
-      fragments: text
-        .split(/\[\s*\.\.\.\s*\]|…/)
-        .map((f) => f.trim())
-        .filter((f) => f.length > 0),
+      lines: cleaned.map(split).filter((f) => f.length > 0),
+      fragments: split(text),
       sourcePage: m?.[3] ? Number(m[3]) : null,
       sourceProgram: m?.[1] ? Number(m[1]) : null,
       sourceSection: m?.[2] ?? null,
@@ -83,41 +98,50 @@ export function verifyQuote(
   quote: ParsedQuote,
   citedPages: number[],
 ): QuoteCheck {
-  const candidates = new Set<number>();
-  if (quote.sourcePage) candidates.add(quote.sourcePage);
-  for (const p of citedPages) for (const q of [p, p - 1, p + 1]) candidates.add(q);
-  const fragments = quote.fragments.map(normalizeForMatch).filter((f) => f.length > 0);
-  if (fragments.length === 0)
+  const lines = quote.lines
+    .map((frags) => frags.map(normalizeForMatch).filter((f) => f.length > 0))
+    .filter((f) => f.length > 0);
+  if (lines.length === 0)
     return { quote, found: true, page: null, line: null, sectionId: null, sectionNumber: null };
-  for (const page of candidates) {
-    if (page < manual.body_start_page || page > manual.page_count) continue;
-    const text = manual.normalizedPages.get(page);
-    if (!text) continue;
+  const preferred: number[] = [];
+  if (quote.sourcePage) preferred.push(quote.sourcePage);
+  for (const p of citedPages) for (const q of [p, p - 1, p + 1]) preferred.push(q);
+  const all: number[] = [];
+  for (let p = manual.body_start_page; p <= manual.page_count; p += 1) all.push(p);
+  const order = [...new Set([...preferred, ...all])].filter(
+    (p) => p >= manual.body_start_page && p <= manual.page_count,
+  );
+  const textOf = (p: number) => manual.normalizedPages.get(p) ?? "";
+  const findLine = (haystack: string, frags: string[]): number => {
     let cursor = 0;
-    let firstOffset = -1;
-    let ok = true;
-    for (const fragment of fragments) {
-      const idx = text.indexOf(fragment, cursor);
-      if (idx === -1) {
-        ok = false;
-        break;
-      }
-      if (firstOffset === -1) firstOffset = idx;
+    let first = -1;
+    for (const fragment of frags) {
+      const idx = haystack.indexOf(fragment, cursor);
+      if (idx === -1) return -1;
+      if (first === -1) first = idx;
       cursor = idx + fragment.length;
     }
-    if (ok) {
-      const pageRecord = manual.pages[page - 1];
-      const line = pageRecord ? lineForNormalizedOffset(pageRecord, firstOffset) : null;
-      const section = resolveSection(manual, page, line ?? undefined);
-      return {
-        quote,
-        found: true,
-        page,
-        line,
-        sectionId: section?.id ?? null,
-        sectionNumber: section?.number ?? null,
-      };
-    }
+    return first;
+  };
+  for (const page of order) {
+    const own = textOf(page);
+    // A passage may run from this page onto the next one (paragraphs cross page breaks).
+    const joined = page < manual.page_count ? `${own} ${textOf(page + 1)}` : own;
+    const offsets = lines.map((frags) => findLine(joined, frags));
+    if (offsets.some((o) => o === -1)) continue;
+    const firstOffset = Math.min(...offsets);
+    if (firstOffset >= own.length) continue; // the quote must start on this page
+    const pageRecord = manual.pages[page - 1];
+    const line = pageRecord ? lineForNormalizedOffset(pageRecord, firstOffset) : null;
+    const section = resolveSection(manual, page, line ?? undefined);
+    return {
+      quote,
+      found: true,
+      page,
+      line,
+      sectionId: section?.id ?? null,
+      sectionNumber: section?.number ?? null,
+    };
   }
   return { quote, found: false, page: null, line: null, sectionId: null, sectionNumber: null };
 }
@@ -167,7 +191,7 @@ export function validateAnswer(manual: LoadedManual, input: ValidationInput): Va
     .filter((q) => q.text.length >= 20)
     .map((q) => verifyQuote(manual, q, validPages));
   for (const c of checks)
-    if (!c.found) problems.push(`quote not found in the manual: "${c.quote.text.slice(0, 80)}"`);
+    if (!c.found) problems.push(`quote not found in the manual: "${c.quote.text.slice(0, 120)}"`);
   // A verbatim quote verified on a body page is grounding evidence in its own right; the API's
   // citation blocks are welcome but the model does not always attach them to blockquotes.
   for (const c of checks)

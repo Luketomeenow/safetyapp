@@ -136,3 +136,42 @@ describe("validateAnswer", () => {
     ).toBe(true);
   });
 });
+
+describe("hardening", () => {
+  it("accepts a marker followed by text on the same line", () => {
+    expect(parseMarker("[[AXX:NOT_COVERED]] The manual does not cover this.")).toEqual({
+      kind: "not_covered",
+      body: "The manual does not cover this.",
+    });
+  });
+  it("finds a quote that continues onto the next page and one with no Source page or citations", () => {
+    const manual = fixtureManual();
+    const [crossing] = extractQuotes(
+      "> are as secure as locks. Lockout/Tagout Devices All Lockout/Tagout devices must be:",
+    );
+    expect(verifyQuote(manual, crossing!, []).page).toBe(2);
+    const [orphan] = extractQuotes(
+      "> Capable of withstanding the environment to which they are exposed",
+    );
+    expect(verifyQuote(manual, orphan!, []).page).toBe(3);
+  });
+  it("parses Source lines with page ranges", () => {
+    const [q] = extractQuotes(
+      "> always use locks over tags\nSource: Program 8 (Lockout/Tagout/Tryout Program), 8.4 Locking and Tagging Circuits, pages 56-57.",
+    );
+    expect(q?.sourcePage).toBe(56);
+  });
+});
+
+describe("multi-line blockquotes", () => {
+  it("verifies each quoted line separately on the same page, ignoring leading bullets", () => {
+    const manual = fixtureManual();
+    const [q] = extractQuotes(
+      "> ● Capable of withstanding the environment to which they are exposed for the maximum\n> All Lockout/Tagout devices must be:\nSource: Program 8, 8.5, page 3",
+    );
+    expect(q?.lines).toHaveLength(2);
+    const check = verifyQuote(manual, q!, [3]);
+    expect(check.found).toBe(true);
+    expect(check.sectionNumber).toBe("8.5");
+  });
+});

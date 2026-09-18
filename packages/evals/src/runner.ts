@@ -81,6 +81,8 @@ async function runOne(
         total_ms: 0,
       },
       answer_text: "",
+      raw_text: "",
+      validation_problems: [],
       citations: [],
       model: null,
       usage: EMPTY,
@@ -111,6 +113,8 @@ async function runOne(
     deterministic: det,
     judge,
     answer_text: r.displayText,
+    raw_text: r.rawText,
+    validation_problems: r.validation.problems,
     citations: r.citations.map((x) => ({
       page: x.page,
       section: x.section?.number ?? null,

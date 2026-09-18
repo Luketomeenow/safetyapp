@@ -140,6 +140,8 @@ export type CaseResult = {
   deterministic: Deterministic;
   judge: JudgeVerdict | null;
   answer_text: string;
+  raw_text: string;
+  validation_problems: string[];
   citations: { page: number; section: string | null; quote: string | null }[];
   model: string | null;
   prompt_version: string;

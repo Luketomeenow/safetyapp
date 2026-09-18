@@ -46,6 +46,8 @@ export type Deps = {
 export type AnswerResult = {
   kind: ResponseKind;
   displayText: string;
+  /** The model's text after the marker, before any replacement; empty for emergency and error turns. */
+  rawText: string;
   citations: DoneCitation[];
   manual: { version_id: string; effective_date: string };
   usage: {
@@ -475,6 +477,7 @@ export async function* answerQuestion(
   const result: AnswerResult = {
     kind: finalKind,
     displayText,
+    rawText: body,
     citations: doneCitations,
     manual: manualRef,
     usage,
@@ -561,6 +564,7 @@ async function* emergencyTurn(
   const result: AnswerResult = {
     kind: "emergency",
     displayText: text,
+    rawText: "",
     citations: doneCitations,
     manual: manualRef,
     usage: EMPTY_USAGE,
@@ -607,6 +611,7 @@ function errorResult(
   return {
     kind: "error",
     displayText: "",
+    rawText: "",
     citations: [],
     manual: manualRef,
     usage: EMPTY_USAGE,

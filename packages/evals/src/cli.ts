@@ -15,7 +15,7 @@ import { applySheet, exportSheet } from "./sheet.ts";
 
 const USAGE = `Usage:
   eval validate-data
-  eval run --profile smoke|pr|release [--seed N] [--concurrency 4] [--no-judge] [--set golden --sample N]
+  eval run --profile smoke|pr|release [--seed N] [--concurrency 2] [--no-judge] [--set golden --sample N] [--ids A,B]
   eval gate --run <runDir> --profile <profile>
   eval draft --programs 8,9,12 | --all [--dry-run]
   eval sheet export [--file data/review/golden-seed-review.csv]
@@ -29,7 +29,8 @@ const { values, positionals } = parseArgs({
   options: {
     profile: { type: "string" },
     seed: { type: "string", default: "7" },
-    concurrency: { type: "string", default: "4" },
+    concurrency: { type: "string", default: "2" },
+    ids: { type: "string" },
     "no-judge": { type: "boolean", default: false },
     set: { type: "string" },
     sample: { type: "string" },
@@ -46,6 +47,7 @@ const repoRoot = process.env.INIT_CWD ?? process.cwd();
 const envFile = path.join(repoRoot, ".env");
 if (existsSync(envFile)) process.loadEnvFile(envFile);
 const RUNS_DIR = path.join(import.meta.dirname, "..", "runs");
+const resolveFile = (f: string) => (path.isAbsolute(f) ? f : path.join(repoRoot, f));
 
 function gitSha(): string {
   try {
@@ -93,7 +95,10 @@ async function main(): Promise<void> {
     const loaded = loadCases(includedDocs(), { includeDrafts: t.include_drafts });
     if (loaded.problems.length) fail(`invalid data:\n${loaded.problems.join("\n")}`, 3);
     let cases: EvalCase[];
-    if (values.set) {
+    if (values.ids) {
+      const wanted = new Set(values.ids.split(",").map((x) => x.trim()));
+      cases = loaded.cases.filter((c) => wanted.has(c.id));
+    } else if (values.set) {
       const pool = loaded.cases.filter((c) => c.set === (values.set as SetName));
       cases = values.sample
         ? sampleCases(
@@ -147,7 +152,7 @@ async function main(): Promise<void> {
     process.exit(g.passed ? 0 : 1);
   }
   if (command === "gate") {
-    const runDir = values.run ?? fail(USAGE);
+    const runDir = resolveFile(values.run ?? fail(USAGE));
     const profile = values.profile ?? fail(USAGE);
     const results = readFileSync(path.join(runDir, "results.jsonl"), "utf8")
       .split("\n")
@@ -204,7 +209,9 @@ async function main(): Promise<void> {
       readInbox(path.join(DATA_DIR, `${s}.jsonl`)),
     );
     if (sub === "export") {
-      const file = values.file ?? path.join(DATA_DIR, "review", "review.csv");
+      const file = values.file
+        ? resolveFile(values.file)
+        : path.join(DATA_DIR, "review", "review.csv");
       mkdirSync(path.dirname(file), { recursive: true });
       const n = exportSheet(
         [...inbox, ...handSets].filter((c) => c.source.status === "draft"),
@@ -214,7 +221,7 @@ async function main(): Promise<void> {
       return;
     }
     if (sub === "import") {
-      const file = values.file ?? fail(USAGE);
+      const file = resolveFile(values.file ?? fail(USAGE));
       const by = values.by ?? fail("Missing --by");
       const all = [...inbox, ...handSets];
       const summary = applySheet(all, file, by);

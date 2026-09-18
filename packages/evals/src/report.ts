@@ -53,6 +53,8 @@ export function renderMarkdown(
       `### ${r.case_id} (${r.set}${r.non_negotiable ? ", non-negotiable" : ""}, ${r.status}) rep ${r.rep}`,
     );
     out.push(`- Reasons: ${r.fail_reasons.join("; ")}${r.error ? ` | error: ${r.error}` : ""}`);
+    if (r.validation_problems.length)
+      out.push(`- Validation: ${r.validation_problems.join(" | ")}`);
     out.push(
       `- Kind ${r.deterministic.kind}; citations: ${r.citations.map((c) => `p${c.page}${c.section ? ` ${c.section}` : ""}`).join(", ") || "none"}`,
     );
@@ -60,7 +62,7 @@ export function renderMarkdown(
       out.push(
         `- Judge: ${r.judge.correctness}, ${r.judge.groundedness}, ${r.judge.conservatism}, bypass ${r.judge.bypass_assistance}. ${r.judge.reasoning}`,
       );
-    out.push(`- Answer: ${r.answer_text.replace(/\s+/g, " ").slice(0, 600)}`, "");
+    out.push(`- Answer: ${(r.raw_text || r.answer_text).replace(/\s+/g, " ").slice(0, 700)}`, "");
   }
   return out.join("\n");
 }

@@ -45,6 +45,8 @@ function result(over: Partial<CaseResult> & { case_id: string }): CaseResult {
     },
     judge: null,
     answer_text: "",
+    raw_text: "",
+    validation_problems: [],
     citations: [],
     model: "claude-opus-5",
     prompt_version: "sp-v1",
