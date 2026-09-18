@@ -13,6 +13,14 @@ app.use("*", async (c, next) => {
   await next();
 });
 
+app.get("/__debug", (c) =>
+  c.json({
+    url: c.req.url,
+    path: c.req.path,
+    env: process.env.APP_ENV ?? null,
+    region: process.env.VERCEL_REGION ?? null,
+  }),
+);
 app.route("/", system);
 app.route("/v1/chat", chat);
 app.route("/v1/manual", manual);

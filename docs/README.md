@@ -36,3 +36,17 @@ pnpm ingest -- inspect --version-id axxiom-s2-v1.0 --page 56
 ```
 
 Ingestion writes intermediate artifacts to `.ingest/<version-id>/` (ignored by git), the manifest to `corpus/<slug>/<version>/manifest.json`, and a review report to `corpus/<slug>/<version>/review/structure.md`. It exits non-zero when a structure check fails.
+
+## Deploying the API (staging)
+
+The API is deployed as one prebuilt Vercel function using the Build Output API, so nothing depends on Vercel's zero-config detection of TypeScript or workspace packages.
+
+```sh
+pnpm --filter @axxiom/api build            # bundles apps/api/src/vercel-entry.ts into .vercel/output/
+vercel deploy --prebuilt --prod --yes --token "$VERCEL_TOKEN"
+```
+
+- Vercel project: `axxiom-safety-api-staging` (region iad1, Node 22 runtime), production domain `https://axxiom-safety-api-staging.vercel.app`.
+- Environment variables live in the Vercel project (production target); set or rotate them with `vercel env add NAME production`.
+- The daily 05:45 Pacific cache warm-up runs from `config.json`; the 45-minute work-hours keep-alive needs Vercel Pro.
+- Local run: `PORT=3111 INIT_CWD=$PWD node_modules/.bin/tsx apps/api/src/local.ts`, then `curl -H "Authorization: Bearer $DEV_AUTH_TOKEN" localhost:3111/v1/manual/current`.

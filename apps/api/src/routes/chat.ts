@@ -52,11 +52,7 @@ chat.post("/", requireUser, rateLimit, async (c) => {
         },
         deps,
       );
-      for (;;) {
-        const next = await gen.next();
-        if (next.done) break;
-        await send(next.value);
-      }
+      for await (const ev of gen) await send(ev);
     } catch (error) {
       if (error instanceof DuplicateMessageError) {
         const sql = getSql();
