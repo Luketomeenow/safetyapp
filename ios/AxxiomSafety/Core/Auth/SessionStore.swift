@@ -17,7 +17,7 @@ final class SessionStore: TokenProviding {
         self.provider = provider
     }
 
-    lazy var api = APIClient(baseURL: AppEnvironment.current.apiBaseURL, tokens: self)
+    @ObservationIgnored lazy var api: APIClient = APIClient(baseURL: AppEnvironment.current.apiBaseURL, tokens: self)
 
     func restore() async {
         if let id = await provider.restore() {

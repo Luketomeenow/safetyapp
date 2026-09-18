@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct EmergencyContact: Codable, Identifiable {
     var id: String { label }

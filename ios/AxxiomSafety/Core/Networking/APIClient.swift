@@ -41,8 +41,7 @@ final class APIClient: Sendable {
     }
 
     /// JSON request with one automatic token refresh on 401.
-    func json<T: Decodable>(_ type: T.Type, path: String, method: String = "GET", body: (some Encodable)? = nil as String?) async throws -> T {
-        let payload = try body.map { try JSONEncoder().encode($0) }
+    func json<T: Decodable>(_ type: T.Type, path: String, method: String = "GET", payload: Data? = nil) async throws -> T {
         var token = try await tokens.accessToken()
         var (data, response) = try await session.data(for: request(path, method: method, body: payload, token: token))
         if (response as? HTTPURLResponse)?.statusCode == 401 {

@@ -120,7 +120,7 @@ struct ChatConversationView: View {
             Text(failure.title).font(.subheadline.bold())
             Text(failure.message).font(.subheadline).foregroundStyle(.secondary)
             HStack {
-                if failure == .interrupted || failure == .offline || { if case .unavailable = failure { return true } else { return false } }() {
+                if failure.isRetryable {
                     Button("Retry") { model.retryLast() }
                 }
                 if failure == .offline { Button("Search the manual") { router.selectedTab = .manual } }

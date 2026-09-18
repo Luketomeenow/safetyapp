@@ -7,13 +7,13 @@ struct MessageVM: Identifiable, Equatable {
     var role: String
     var text: String
     var status: String
-    var kind: String?
-    var serverId: String?
+    var kind: String? = nil
+    var serverId: String? = nil
     var citations: [CitationDTO] = []
-    var manualVersionId: String?
-    var manualEffectiveDate: String?
-    var feedbackRating: String?
-    var feedbackFlagged = false
+    var manualVersionId: String? = nil
+    var manualEffectiveDate: String? = nil
+    var feedbackRating: String? = nil
+    var feedbackFlagged: Bool = false
     var interrupted: Bool { status == "interrupted" }
 }
 
@@ -134,12 +134,14 @@ final class ChatModel {
         streamTask?.cancel()
     }
 
+    /// Re-asks the last question: drops the failed answer and the question, then sends it again.
     func retryLast() {
-        guard let lastUser = messages.last(where: { $0.role == "user" }) else { return }
-        if let idx = messages.lastIndex(where: { $0.role == "assistant" }), idx > messages.firstIndex(where: { $0.id == lastUser.id }) ?? -1 {
-            messages.remove(at: idx)
+        guard streamTask == nil, let lastUser = messages.last(where: { $0.role == "user" }) else { return }
+        guard let userIndex = messages.lastIndex(where: { $0.id == lastUser.id }) else { return }
+        if let assistantIndex = messages.lastIndex(where: { $0.role == "assistant" }), assistantIndex > userIndex {
+            messages.remove(at: assistantIndex)
         }
-        messages.removeAll { $0.id == lastUser.id }
+        messages.remove(at: userIndex)
         draft = lastUser.text
         send()
     }

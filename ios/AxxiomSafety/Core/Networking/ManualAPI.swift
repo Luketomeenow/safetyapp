@@ -52,6 +52,6 @@ extension APIClient {
     func manualCurrent() async throws -> ManualCurrentDTO { try await json(ManualCurrentDTO.self, path: "/v1/manual/current") }
     func config() async throws -> ConfigDTO { try await json(ConfigDTO.self, path: "/v1/config") }
     func sendFeedback(_ request: FeedbackRequest) async throws -> FeedbackResponse {
-        try await json(FeedbackResponse.self, path: "/v1/feedback", method: "POST", body: request)
+        try await json(FeedbackResponse.self, path: "/v1/feedback", method: "POST", payload: try JSONEncoder().encode(request))
     }
 }

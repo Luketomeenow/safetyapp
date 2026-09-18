@@ -37,6 +37,14 @@ enum ChatFailure: Error, Equatable {
         }
     }
 
+    /// Whether offering "Retry" makes sense for this failure.
+    var isRetryable: Bool {
+        switch self {
+        case .offline, .interrupted, .rateLimited, .unavailable: return true
+        case .unauthorized, .forbidden, .conversationClosed, .cancelled: return false
+        }
+    }
+
     static func from(status: Int, retryAfter: String?) -> ChatFailure? {
         switch status {
         case 200 ..< 300: return nil
