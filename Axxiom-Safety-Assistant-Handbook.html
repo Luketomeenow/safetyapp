@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Axxiom Safety Assistant Handbook</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&amp;family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+:root{
+  --bg:#F2F5F8;
+  --surface:#FFFFFF;
+  --surface-2:#E8EDF2;
+  --ink:#17212B;
+  --ink-2:#4A5865;
+  --ink-3:#77848F;
+  --line:#D3DBE3;
+  --line-strong:#AEBAC6;
+  --accent:#E35A00;
+  --accent-ink:#9E3E00;
+  --accent-soft:#FCE9DC;
+  --steel:#24507B;
+  --steel-soft:#DFE8F1;
+  --good:#1D7A4C;
+  --good-soft:#DCEFE4;
+  --warn:#9F6400;
+  --warn-soft:#FBEED6;
+  --crit:#B3251D;
+  --crit-soft:#FADFDD;
+  --stripe-dark:#17212B;
+  --shadow:0 1px 2px rgba(23,33,43,.06),0 10px 28px -14px rgba(23,33,43,.22);
+  --display:"Barlow Condensed","Arial Narrow","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E141A; --surface:#161E26; --surface-2:#1E2831;
+    --ink:#E6ECF2; --ink-2:#A6B3BF; --ink-3:#7E8B97;
+    --line:#2A3641; --line-strong:#3B4956;
+    --accent:#FF7A1F; --accent-ink:#FFA55E; --accent-soft:#3A2314;
+    --steel:#7FB1E3; --steel-soft:#1B2C3D;
+    --good:#4FCB8E; --good-soft:#12301F;
+    --warn:#E6B54F; --warn-soft:#332714;
+    --crit:#F27168; --crit-soft:#3A1917;
+    --stripe-dark:#0E141A;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E141A; --surface:#161E26; --surface-2:#1E2831;
+  --ink:#E6ECF2; --ink-2:#A6B3BF; --ink-3:#7E8B97;
+  --line:#2A3641; --line-strong:#3B4956;
+  --accent:#FF7A1F; --accent-ink:#FFA55E; --accent-soft:#3A2314;
+  --steel:#7FB1E3; --steel-soft:#1B2C3D;
+  --good:#4FCB8E; --good-soft:#12301F;
+  --warn:#E6B54F; --warn-soft:#332714;
+  --crit:#F27168; --crit-soft:#3A1917;
+  --stripe-dark:#0E141A;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+a{color:var(--steel)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.page{max-width:1240px;margin:0 auto;padding-inline:clamp(16px,4vw,40px);padding-block:0 5rem}
+
+.hdr{padding-block:0 1.75rem;border-bottom:1px solid var(--line)}
+.stripe{height:8px;width:min(300px,62%);background:repeating-linear-gradient(-45deg,var(--accent) 0 14px,var(--stripe-dark) 14px 28px);border-radius:0 0 3px 3px;margin-bottom:2rem}
+.eyebrow{font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.09em;font-size:.9rem;color:var(--accent-ink);margin:0 0 .5rem}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(2.5rem,6vw,4rem);line-height:.98;letter-spacing:-.01em;margin:0 0 .85rem;text-wrap:balance;max-width:18ch}
+.lede{font-size:clamp(1.05rem,2vw,1.25rem);line-height:1.45;color:var(--ink-2);max-width:62ch;margin:0 0 1.5rem;text-wrap:balance}
+.meta{display:flex;flex-wrap:wrap;gap:1rem 2.5rem;margin:0}
+.meta div{min-width:0}
+.meta dt{font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;font-size:.78rem;color:var(--ink-3);font-weight:600}
+.meta dd{margin:0;font-size:.95rem;max-width:36ch}
+
+.layout{display:grid;grid-template-columns:248px minmax(0,1fr);gap:3rem;padding-top:2.25rem;align-items:start}
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 1rem);font-size:.88rem;max-height:calc(100vh - 3rem);overflow-y:auto}
+.toc h2{font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;font-size:.78rem;color:var(--ink-3);font-weight:600;margin:0 0 .5rem}
+.toc ol{list-style:none;margin:0;padding:0;border-left:2px solid var(--line)}
+.toc li a{display:block;padding:.28rem .85rem;color:var(--ink-2);text-decoration:none;border-left:2px solid transparent;margin-left:-2px;line-height:1.3}
+.toc li a:hover{color:var(--ink);border-left-color:var(--accent)}
+.toc .num{font-family:var(--mono);font-size:.74rem;color:var(--ink-3);margin-right:.4rem}
+main{min-width:0}
+@media (max-width:980px){
+  .layout{grid-template-columns:1fr;gap:1.25rem}
+  .toc{position:static;max-height:none}
+  .toc ol{display:flex;flex-wrap:wrap;gap:.35rem .4rem;border-left:0}
+  .toc li a{border:1px solid var(--line);border-radius:999px;padding:.24rem .68rem;background:var(--surface);margin:0}
+  .toc li a:hover{border-color:var(--accent)}
+  .toc .num{display:none}
+}
+
+.prose h2{font-family:var(--display);font-weight:600;font-size:clamp(1.8rem,3vw,2.35rem);line-height:1.05;margin:3.25rem 0 .9rem;text-wrap:balance;scroll-margin-top:1rem;padding-top:.5rem;border-top:1px solid var(--line)}
+.prose h2:first-child{margin-top:0;border-top:0;padding-top:0}
+.prose h2 .num{color:var(--accent);font-weight:700;margin-right:.45rem}
+.prose h3{font-family:var(--display);font-weight:600;font-size:1.4rem;line-height:1.15;margin:2rem 0 .55rem;text-wrap:balance}
+.prose h4{font-size:.98rem;font-weight:600;margin:1.4rem 0 .35rem}
+.prose p,.prose li{max-width:72ch}
+.prose p{margin:0 0 .9rem}
+.prose ul,.prose ol{padding-left:1.2rem;margin:0 0 1rem}
+.prose li{margin-bottom:.4rem}
+.prose li::marker{color:var(--ink-3)}
+.prose strong{font-weight:600}
+.intro{color:var(--ink-2);font-style:italic;max-width:72ch}
+code{font-family:var(--mono);font-size:.88em;background:var(--surface-2);padding:.08em .35em;border-radius:4px;word-break:break-word}
+pre{margin:0 0 1.25rem;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:.9rem 1rem;overflow-x:auto}
+pre code{background:none;padding:0;font-size:.84rem;line-height:1.6;white-space:pre}
+
+.quickref{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.6rem;margin:1.25rem 0 1.75rem;padding:0;list-style:none}
+.quickref li{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:.75rem .9rem;margin:0;max-width:none}
+.quickref .k{font-family:var(--display);text-transform:uppercase;letter-spacing:.07em;font-size:.74rem;color:var(--ink-3);font-weight:600;display:block;margin-bottom:.15rem}
+.quickref .v{font-family:var(--mono);font-size:.82rem;word-break:break-all;line-height:1.45}
+
+.facts{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.6rem 1.4rem;margin:1.1rem 0 1.5rem;padding:1.1rem 1.35rem;background:var(--surface);border:1px solid var(--line);border-radius:6px}
+.facts dt{font-family:var(--display);text-transform:uppercase;letter-spacing:.07em;font-size:.8rem;font-weight:600;color:var(--ink-3);padding-top:.15rem}
+.facts dd{margin:0;font-size:.93rem;max-width:none}
+@media (max-width:620px){.facts{grid-template-columns:1fr;gap:.1rem} .facts dd{margin-bottom:.65rem}}
+
+.callout{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:1.1rem 1.25rem .6rem;margin:1.25rem 0 1.6rem;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.callout.hazard::before{content:"";position:absolute;inset:0 0 auto 0;height:7px;background:repeating-linear-gradient(-45deg,var(--accent) 0 14px,var(--stripe-dark) 14px 28px)}
+.callout.hazard{padding-top:1.4rem}
+.callout h3{margin:.1rem 0 .6rem}
+.callout ul{margin:0 0 .6rem;padding-left:1.05rem}
+
+.tablewrap{overflow-x:auto;margin:1rem 0 1.6rem;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:.88rem;line-height:1.45}
+caption{text-align:left;font-family:var(--display);font-weight:600;font-size:1.02rem;padding:.75rem .85rem .35rem;color:var(--ink)}
+th,td{text-align:left;vertical-align:top;padding:.6rem .85rem;border-bottom:1px solid var(--line)}
+thead th{font-family:var(--display);text-transform:uppercase;letter-spacing:.07em;font-size:.76rem;color:var(--ink-3);font-weight:600;background:var(--surface-2);border-bottom:1px solid var(--line-strong)}
+tbody tr:last-child td,tbody tr:last-child th{border-bottom:0}
+tbody th[scope="row"]{font-weight:600;color:var(--ink);white-space:nowrap}
+td.num,th.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+thead th.num{text-align:right}
+td code,th code{white-space:nowrap}
+.wide table{min-width:680px}
+.mid table{min-width:540px}
+
+ol.flow{list-style:none;padding:0;margin:1.35rem 0 1.75rem;counter-reset:flow;position:relative}
+ol.flow::before{content:"";position:absolute;left:1.05rem;top:.75rem;bottom:.75rem;width:2px;background:var(--line-strong)}
+ol.flow li{counter-increment:flow;position:relative;padding-left:3.4rem;margin-bottom:1.1rem;max-width:72ch}
+ol.flow li::before{content:counter(flow);position:absolute;left:0;top:0;width:2.1rem;height:2.1rem;border-radius:50%;background:var(--surface);border:2px solid var(--accent);color:var(--accent-ink);font-family:var(--display);font-weight:700;font-size:1.05rem;display:grid;place-items:center}
+ol.flow .where{font-family:var(--mono);font-size:.71rem;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.1rem}
+ol.flow strong{display:block;font-family:var(--display);font-weight:600;font-size:1.12rem;line-height:1.2;margin-bottom:.15rem}
+
+.chip{display:inline-block;font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.07em;font-size:.7rem;padding:.12rem .5rem;border-radius:3px;vertical-align:middle;white-space:nowrap}
+.chip.done{background:var(--good-soft);color:var(--good)}
+.chip.wip{background:var(--warn-soft);color:var(--warn)}
+.chip.blocked{background:var(--crit-soft);color:var(--crit)}
+.chip.later{background:var(--steel-soft);color:var(--steel)}
+
+.kv{font-family:var(--mono);font-size:.84rem}
+footer{border-top:1px solid var(--line);margin-top:3.5rem;padding-top:1.15rem;font-size:.85rem;color:var(--ink-2)}
+footer p{max-width:80ch;margin:0 0 .5rem}
+
+@media print{
+  .toc{display:none}
+  .layout{grid-template-columns:1fr}
+  a{color:inherit}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="hdr">
+  <div class="stripe" aria-hidden="true"></div>
+  <p class="eyebrow">Axxiom Elevator &middot; Engineering and operations handbook &middot; September 18, 2026</p>
+  <h1>Axxiom Safety Assistant Handbook</h1>
+  <p class="lede">How the technicians' safety assistant is built, how to run it, and how to change it without breaking the promise that every answer comes from the manual.</p>
+  <dl class="meta">
+    <div><dt>Status</dt><dd>Backend and iPhone app working on staging; pilot not yet started</dd></div>
+    <div><dt>Manual in service</dt><dd>axxiom-s2-v1.0, 209 pages, effective September 16, 2026</dd></div>
+    <div><dt>Code</dt><dd>5 TypeScript packages, 1 SwiftUI app, 59 automated tests</dd></div>
+    <div><dt>Repository</dt><dd>github.com/Luketomeenow/safetyapp</dd></div>
+  </dl>
+</header>
+
+<div class="layout">
+<nav class="toc" aria-label="Contents">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#what"><span class="num">1</span>What this is</a></li>
+    <li><a href="#quick"><span class="num">2</span>Quick reference</a></li>
+    <li><a href="#answer"><span class="num">3</span>How an answer is produced</a></li>
+    <li><a href="#repo"><span class="num">4</span>Repository layout</a></li>
+    <li><a href="#corpus"><span class="num">5</span>The manual corpus</a></li>
+    <li><a href="#api"><span class="num">6</span>The API</a></li>
+    <li><a href="#data"><span class="num">7</span>Database</a></li>
+    <li><a href="#ios"><span class="num">8</span>The iPhone app</a></li>
+    <li><a href="#evals"><span class="num">9</span>Evaluation and quality gates</a></li>
+    <li><a href="#ops"><span class="num">10</span>Running it in production</a></li>
+    <li><a href="#env"><span class="num">11</span>Environments and deploys</a></li>
+    <li><a href="#cost"><span class="num">12</span>What it costs</a></li>
+    <li><a href="#privacy"><span class="num">13</span>Security and privacy</a></li>
+    <li><a href="#apple"><span class="num">14</span>Getting on technicians' phones</a></li>
+    <li><a href="#gotchas"><span class="num">15</span>Things that will bite you</a></li>
+    <li><a href="#state"><span class="num">16</span>Where the project stands</a></li>
+  </ol>
+</nav>
+
+<main class="prose">
+
+<h2 id="what"><span class="num">1</span>What this is</h2>
+<p>The Axxiom Safety Assistant answers an elevator technician's safety question using only Axxiom's Safety and Health Policies manual, and shows the policy text it relied on with the page it came from. It runs on company iPhones. It is not a general chatbot and cannot answer anything the manual does not cover.</p>
+<p>Three commitments shape every design decision in this handbook. Break any one of them and the tool stops being trustworthy:</p>
+<ul>
+  <li><strong>Grounded.</strong> Every answer quotes the manual verbatim and cites program, subsection and PDF page. The server verifies the quote actually appears on that page before the technician sees it.</li>
+  <li><strong>Conservative.</strong> Where a rule depends on conditions, the assistant states the conditions and tells the technician to confirm with a supervisor. It never explains how to work around lockout/tagout, fall protection, hoistway access, confined space entry, jumpers or energized electrical work.</li>
+  <li><strong>Reviewable.</strong> Every question and answer is stored with its citations, model, prompt version and manual version, so the Safety Manager can audit what the assistant said in the company's name.</li>
+</ul>
+
+<div class="callout hazard">
+  <h3>The one rule that matters most</h3>
+  <p>An answer with no verified citation is never shown. The server replaces it with a message pointing to the manual and flags it for review. If you change the answer pipeline, keep that check: it is in <code>packages/core/src/validate.ts</code> and it is the difference between a safety tool and a plausible-sounding guess.</p>
+</div>
+
+<h2 id="quick"><span class="num">2</span>Quick reference</h2>
+<ul class="quickref">
+  <li><span class="k">Staging API</span><span class="v">https://axxiom-safety-api-staging.vercel.app</span></li>
+  <li><span class="k">Database</span><span class="v">Supabase axxiom-safety-staging (us-east-1)</span></li>
+  <li><span class="k">Answer model</span><span class="v">claude-opus-5, effort medium</span></li>
+  <li><span class="k">Judge and drafting model</span><span class="v">claude-sonnet-5</span></li>
+  <li><span class="k">Prompt version</span><span class="v">sp-v2</span></li>
+  <li><span class="k">Secrets</span><span class="v">.env at the repo root (never committed)</span></li>
+</ul>
+
+<h3>Commands you will actually use</h3>
+<pre><code># install and check everything
+pnpm install
+pnpm typecheck &amp;&amp; pnpm lint &amp;&amp; pnpm test
+
+# rebuild the manual from the PDF (no API key needed)
+pnpm ingest -- run --pdf corpus/axxiom-s2/v1.0/source.pdf \
+  --version-id axxiom-s2-v1.0 --expect-pages 209
+pnpm ingest -- inspect --version-id axxiom-s2-v1.0 --page 56
+
+# publish a manual version to the database, then make it live
+pnpm ingest -- publish --version-id axxiom-s2-v1.0 --pdf corpus/axxiom-s2/v1.0/source.pdf
+pnpm ingest -- approve --version-id axxiom-s2-v1.0 --by "Safety Manager"
+pnpm ingest -- activate --version-id axxiom-s2-v1.0
+
+# run the API locally against staging data
+PORT=3111 INIT_CWD=$PWD node_modules/.bin/tsx apps/api/src/local.ts
+
+# ask three questions through the real pipeline
+pnpm --filter @axxiom/core smoke
+
+# evaluations
+pnpm --filter @axxiom/evals eval -- validate-data
+pnpm --filter @axxiom/evals eval -- run --profile smoke
+pnpm --filter @axxiom/evals eval -- run --profile pr --concurrency 2
+
+# deploy the API to staging
+pnpm --filter @axxiom/api build
+vercel deploy --prebuilt --prod --yes --token "$VERCEL_TOKEN"
+
+# the iPhone app
+cd ios &amp;&amp; xcodegen generate &amp;&amp; open AxxiomSafety.xcodeproj</code></pre>
+
+<h2 id="answer"><span class="num">3</span>How an answer is produced</h2>
+<p class="intro">One question, start to finish. The controls that keep answers grounded are steps 5 and 6.</p>
+<ol class="flow">
+  <li><span class="where">iPhone</span><strong>The technician asks</strong>Typed or dictated on the device. The app sends the question, the conversation id and a client message id that makes a retry safe to the Axxiom API over HTTPS with the technician's sign-in token.</li>
+  <li><span class="where">API</span><strong>Identity and limits are checked</strong>The token is verified against the identity provider's public keys. Per-user hourly and daily quotas are consumed. The conversation is loaded or created, and closed if it has run past 20 turns, two hours idle, or a manual update.</li>
+  <li><span class="where">API</span><strong>Emergencies short-circuit</strong>A deterministic check looks for an emergency in progress. On a hit the app gets the approved emergency steps from the manual and a call button immediately, with no model call at all.</li>
+  <li><span class="where">Claude</span><strong>The model reads the whole manual</strong>The request carries a frozen system prompt and the entire manual as one document, one text block per PDF page, cached for an hour. The model streams its answer. There is no search step, so there is no wrong passage to retrieve.</li>
+  <li><span class="where">API</span><strong>The answer is validated</strong>The first line must carry a marker saying whether this is an answer, a not-covered reply, out of scope, or an emergency. Every quoted line must be found verbatim on a citable page, which also pins the exact subsection. Citations to the table of contents are rejected.</li>
+  <li><span class="where">API</span><strong>Failures are replaced, not shown</strong>If validation fails, or the model refused, or the answer was cut off before any citation, the text is replaced with a pointer to the manual and the turn is flagged for the Safety Manager automatically.</li>
+  <li><span class="where">iPhone</span><strong>The technician reads and verifies</strong>Answer, citation cards, and the manual version under each answer. Tapping a card opens the manual at that page with the quoted passage highlighted, from the copy stored on the phone.</li>
+  <li><span class="where">Database and Langfuse</span><strong>Everything is recorded</strong>Question, answer, citations, model, prompt version, manual version, token usage, timings and stop reason are written in one transaction, and the turn is traced for monitoring.</li>
+</ol>
+
+<h3>The answer format the prompt enforces</h3>
+<p>The model is required to open with one marker, then use three headed parts. The markers are how the server classifies a turn without guessing at prose.</p>
+<div class="tablewrap mid">
+<table>
+  <thead><tr><th>Marker</th><th>Meaning</th><th>Citation required</th></tr></thead>
+  <tbody>
+    <tr><th scope="row"><code>[[AXX:ANSWER]]</code></th><td>The manual answers the question</td><td>Yes</td></tr>
+    <tr><th scope="row"><code>[[AXX:NOT_COVERED]]</code></th><td>A safety question the manual does not address</td><td>No</td></tr>
+    <tr><th scope="row"><code>[[AXX:OUT_OF_SCOPE]]</code></th><td>Not about Axxiom safety policy at all</td><td>No</td></tr>
+    <tr><th scope="row"><code>[[AXX:EMERGENCY]]</code></th><td>Something is happening right now</td><td>No</td></tr>
+  </tbody>
+</table>
+</div>
+<p>After <code>[[AXX:ANSWER]]</code> the model writes <strong>Answer</strong> (one to four sentences), <strong>Policy text</strong> (verbatim blockquotes, each followed by a Source line naming program, subsection and page), and <strong>Conditions and stop points</strong>. The app strips the marker and renders the rest.</p>
+
+<h2 id="repo"><span class="num">4</span>Repository layout</h2>
+<div class="tablewrap wide">
+<table>
+  <thead><tr><th>Path</th><th>What lives there</th><th class="num">Size</th></tr></thead>
+  <tbody>
+    <tr><th scope="row"><code>packages/shared</code></th><td>Schemas and types every other package imports: the manifest, the event contract, REST payloads, and the text normalization used for quote matching</td><td class="num">289 lines</td></tr>
+    <tr><th scope="row"><code>packages/ingest</code></th><td>Turns the manual PDF into versioned per-page blocks: extraction, table of contents parsing, program and subsection detection, table rebuilding, checks, review report</td><td class="num">1,570 lines</td></tr>
+    <tr><th scope="row"><code>packages/core</code></th><td>The answer pipeline: frozen prompt, cached request prefix, streaming, validation, emergency playbooks, persistence, cache keep-alive</td><td class="num">1,526 lines</td></tr>
+    <tr><th scope="row"><code>apps/api</code></th><td>The HTTP layer only: routes, authentication, rate limits, tracing, and the bundled function deployed to Vercel</td><td class="num">719 lines</td></tr>
+    <tr><th scope="row"><code>packages/evals</code></th><td>Test sets, the runner, deterministic and model-based grading, thresholds, reports, question drafting, the Safety Manager's review sheet</td><td class="num">1,509 lines</td></tr>
+    <tr><th scope="row"><code>ios/</code></th><td>The SwiftUI app; the Xcode project is generated from <code>project.yml</code> and is not committed</td><td class="num">2,527 lines</td></tr>
+    <tr><th scope="row"><code>corpus/axxiom-s2/v1.0/</code></th><td>Source PDF, table registry, heading overrides, emergency playbooks, generated manifest, review report</td><td class="num">&mdash;</td></tr>
+    <tr><th scope="row"><code>supabase/migrations/</code></th><td>Hand-written SQL, applied with the Supabase CLI</td><td class="num">2 files</td></tr>
+    <tr><th scope="row"><code>docs/</code></th><td>Setup, decisions, the Apple submission checklist, the privacy policy draft, runbooks</td><td class="num">&mdash;</td></tr>
+  </tbody>
+</table>
+</div>
+<p>The split that matters: <strong>the answer pipeline is in <code>packages/core</code>, not in the API app.</strong> That lets the evaluation harness call <code>answerOnce()</code> directly, so a few hundred test questions share one warm cache and never touch HTTP.</p>
+
+<h2 id="corpus"><span class="num">5</span>The manual corpus</h2>
+<dl class="facts">
+  <dt>Document</dt><dd>Axxiom Elevator Safety and Health Policies, Section 2: Specific Safety Policies</dd>
+  <dt>Version in service</dt><dd><code>axxiom-s2-v1.0</code>, effective 2026-09-16, PDF checksum <code>8add6005988c&hellip;</code></dd>
+  <dt>Size</dt><dd>209 pages, 25 programs, 295 sections, about 72,000 words</dd>
+  <dt>In the model's context</dt><dd>168,754 tokens, cached for one hour</dd>
+  <dt>Body starts</dt><dd>PDF page 13; pages 1 to 12 are the table of contents and are not citable</dd>
+</dl>
+
+<h3>Why ingestion is not just "extract the text"</h3>
+<p>The source document has four properties that would produce wrong answers if handled naively:</p>
+<ul>
+  <li><strong>The table of contents lies about page numbers.</strong> It drifts from 3 pages off at the start to about 20 by the end. Ingestion uses it only as the expected list of titles. Every citation uses the real PDF page, and the contents pages are replaced with a one-line placeholder telling the model not to cite them.</li>
+  <li><strong>Every table was flattened to one cell per line</strong> in the PDF itself. Four tables are rebuilt from a registry in <code>tables.json</code>: electrical working clearances, ladder overlap, welding shade numbers and the first-aid kit contents. A table that spans a page break is written in full on both pages so either citation verifies.</li>
+  <li><strong>Sections do not align to pages.</strong> A program's revision table usually sits on the next program's first page, so section spans are tracked to the line, not the page.</li>
+  <li><strong>Headings are irregular.</strong> Programs are found by their <code>(Reference: Policy AXX-####)</code> line rather than by formatting. Of 271 subsections, 263 match exactly, 6 are titles that wrap onto two lines, and 2 needed manual overrides.</li>
+</ul>
+
+<h3>Updating the manual</h3>
+<p>The Safety Manager owns the Google Doc. Nobody edits extracted text by hand.</p>
+<ol>
+  <li>Export a fresh PDF into <code>corpus/axxiom-s2/&lt;version&gt;/source.pdf</code>.</li>
+  <li>Run <code>pnpm ingest -- run</code>. It fails the run if a program is missing, a subsection is unmatched, a registered table cannot be rebuilt, or a body page belongs to no section.</li>
+  <li>Review <code>review/structure.md</code>, then <code>publish</code>, <code>approve</code> and <code>activate</code>. Activation refuses unless the approval file matches the exact pages that were reviewed.</li>
+  <li>Run the release evaluation. Conversations pinned to the old version close automatically, and the app shows the new version under every answer.</li>
+</ol>
+<p><strong>Pin the extraction tool.</strong> The manifest records the <code>pdftotext</code> version. A different one changes bytes, which changes the cached prefix and can break quote matching.</p>
+
+<h3>Known problems in the source document</h3>
+<div class="tablewrap wide">
+<table>
+  <thead><tr><th>Where</th><th>Problem</th><th>Handling</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">Contents, 20.5</th><td>Reads "Remit-Required Space Entry"; the body says "Permit-Required"</td><td>Override points it at page 170</td></tr>
+    <tr><th scope="row">Contents, 24.3</th><td>"Driving Position Inventory" has no content in the body</td><td>Marked absent; the assistant reports the topic as not covered</td></tr>
+    <tr><th scope="row">Page 25</th><td>The hazard communication training matrix lost its columns entirely</td><td>Not rebuilt, because that would be guessing. Must be fixed in the Google Doc</td></tr>
+    <tr><th scope="row">Whole document</th><td>Missing Section 1, Appendices A to H, the industry handbook and site emergency plans</td><td>The assistant correctly says "not covered". Add them before the pilot</td></tr>
+    <tr><th scope="row">Spelling</th><td>"SUPERVISIOR", "de- energized"</td><td>Preserved verbatim so quotes match; fix at the source</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="api"><span class="num">6</span>The API</h2>
+<p>A single bundled function on Vercel, in the same region as the database. Every route needs a bearer token except the health checks and the cron endpoint, which uses its own secret.</p>
+<div class="tablewrap wide">
+<table>
+  <caption>Endpoints</caption>
+  <thead><tr><th>Route</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><th scope="row"><code>POST /v1/chat</code></th><td>Ask a question. Responds with a server-sent event stream, described below</td></tr>
+    <tr><th scope="row"><code>GET /v1/manual/current</code></th><td>Active manual version, checksum, program list, and a signed one-hour download link for the PDF</td></tr>
+    <tr><th scope="row"><code>POST /v1/feedback</code></th><td>Thumbs up or down, or a "this is wrong" report with a comment</td></tr>
+    <tr><th scope="row"><code>GET /v1/conversations</code></th><td>The signed-in technician's conversations, newest first</td></tr>
+    <tr><th scope="row"><code>GET /v1/conversations/:id</code></th><td>One conversation with its messages and citations</td></tr>
+    <tr><th scope="row"><code>GET /v1/config</code></th><td>Emergency contacts, disclaimer version, minimum app version</td></tr>
+    <tr><th scope="row"><code>GET /health</code></th><td>Database reachable and a manual is active. Used by monitoring</td></tr>
+    <tr><th scope="row"><code>GET /health/deep</code></th><td>Also confirms the model is reachable. Bills no tokens</td></tr>
+    <tr><th scope="row"><code>POST /internal/cache-keepalive</code></th><td>Warms the manual cache before the working day. Cron only</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>The chat event stream</h3>
+<p>Events are newline-delimited, with a comment ping every ten seconds so proxies do not close an idle stream while the model thinks. Clients must ignore event types they do not recognise.</p>
+<div class="tablewrap wide">
+<table>
+  <thead><tr><th>Event</th><th>When</th><th>Payload</th></tr></thead>
+  <tbody>
+    <tr><th scope="row"><code>status</code></th><td>Stage changes</td><td><code>reading_manual</code>, <code>writing</code> or <code>verifying</code></td></tr>
+    <tr><th scope="row"><code>text</code></th><td>Continuously</td><td>A fragment of the answer, with the marker already removed</td></tr>
+    <tr><th scope="row"><code>citation</code></th><td>During streaming</td><td>A provisional page reference so cards can appear early</td></tr>
+    <tr><th scope="row"><code>emergency</code></th><td>Emergency detected</td><td>Headline, steps, call button and contacts</td></tr>
+    <tr><th scope="row"><code>replace</code></th><td>Validation failed, refusal, or truncation</td><td>Replacement text and the reason</td></tr>
+    <tr><th scope="row"><code>done</code></th><td>Always last on success</td><td>Message and conversation ids, kind, verified citations with quotes, manual version, token usage, timings</td></tr>
+    <tr><th scope="row"><code>error</code></th><td>Always last on failure</td><td>A code the client maps to a message, and whether a retry is worthwhile</td></tr>
+  </tbody>
+</table>
+</div>
+<p>The citations in <code>done</code> are the authoritative ones: they carry the verified quote and the resolved subsection. The <code>citation</code> events during streaming exist only so the interface can show something early.</p>
+
+<h3>Sign-in</h3>
+<p>Token verification is deliberately pluggable. Today the pilot uses Supabase Auth; moving to Axxiom's Microsoft or Google identity is three environment variables (<code>AUTH_JWKS_URL</code>, <code>AUTH_ISSUER</code>, <code>AUTH_AUDIENCE</code>) and a different sign-in screen in the app. The API stores only the issuer and subject, never an email address.</p>
+
+<h2 id="data"><span class="num">7</span>Database</h2>
+<p>Postgres on Supabase. Row-level security is on for every table with no policies, so the anonymous and signed-in roles can read nothing: only the API, holding the service role, touches data.</p>
+<div class="tablewrap wide">
+<table>
+  <thead><tr><th>Group</th><th>Tables</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">Manual</th><td><code>documents</code>, <code>manual_versions</code>, <code>manual_pages</code>, <code>manual_sections</code></td><td>One active version per document, enforced by a partial unique index. Pages store the exact text the model sees</td></tr>
+    <tr><th scope="row">Conversations</th><td><code>app_users</code>, <code>conversations</code>, <code>messages</code>, <code>message_citations</code></td><td>Users are pseudonymous. Assistant messages keep the raw content blocks so a follow-up replays exactly what the model said</td></tr>
+    <tr><th scope="row">Oversight</th><td><code>feedback</code></td><td>Holds both technician reports and automatic flags raised when validation fails</td></tr>
+    <tr><th scope="row">Operations</th><td><code>rate_limit_buckets</code>, <code>keepalive_runs</code>, <code>model_prices</code></td><td>Rate limits are consumed by a SQL function so two requests cannot race</td></tr>
+    <tr><th scope="row">Quality</th><td><code>eval_runs</code>, <code>eval_results</code></td><td>Run history, so a regression can be traced to a prompt or manual version</td></tr>
+  </tbody>
+</table>
+</div>
+<p>Four views answer the questions the weekly review asks: <code>v_turns_daily</code> (volume, answer kinds, 95th percentile latency, cache hit rate, cost, thumbs-down), <code>v_not_covered_by_program</code>, <code>v_program_volume</code> and <code>v_review_backlog</code>.</p>
+
+<h2 id="ios"><span class="num">8</span>The iPhone app</h2>
+<p>SwiftUI, iOS 17 and later, iPhone only. One third-party package (Supabase authentication). The Xcode project is generated from <code>project.yml</code>, so it is never edited by hand and never committed.</p>
+<div class="tablewrap wide">
+<table>
+  <thead><tr><th>Area</th><th>What it does</th><th>Worth knowing</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">Chat</th><td>Streams the answer, shows citation cards, the manual version, feedback controls and read-aloud</td><td>Text fragments are applied at most twenty times a second, so the layout is not rebuilt per token</td></tr>
+    <tr><th scope="row">Manual</th><td>Downloads the PDF, verifies its checksum, stores it outside backup, searches it, opens it at a page</td><td>Search and reading work with no connection. Chat is the only part that needs the network</td></tr>
+    <tr><th scope="row">Highlighting</th><td>Finds the quoted passage on the cited page and highlights it</td><td>Text is normalized once per page with a map back to the original, so line breaks, curly quotes and bullets do not defeat the match</td></tr>
+    <tr><th scope="row">Emergency</th><td>A button on every screen, a sheet with Call 911 and company contacts</td><td>An answer marked as an emergency opens the sheet automatically</td></tr>
+    <tr><th scope="row">Voice</th><td>Dictation on the device, and reading an answer aloud</td><td>Falls back to typing, and gives up after three seconds of silence rather than hanging</td></tr>
+    <tr><th scope="row">Networking</th><td>A byte-level event parser over <code>URLSession</code></td><td>It splits on line feeds only. Splitting on every Unicode line break would corrupt JSON payloads</td></tr>
+  </tbody>
+</table>
+</div>
+<p><strong>Testing the app.</strong> Eleven unit tests cover the parser, event decoding, passage matching and text rendering. A walkthrough test drives the real app against staging and attaches a screenshot at every step: sign in, disclaimer, ask, manual, search, reader, emergency. Those screenshots double as the App Store submission images.</p>
+<pre><code>cd ios
+xcodebuild test -project AxxiomSafety.xcodeproj -scheme "AxxiomSafety Dev" \
+  -destination 'platform=iOS Simulator,name=iPhone 17' \
+  -resultBundlePath /tmp/WT.xcresult \
+  -only-testing:AxxiomSafetyUITests/WalkthroughTests \
+  TEST_RUNNER_PILOT_EMAIL="$EMAIL" TEST_RUNNER_PILOT_PASSWORD="$PASSWORD"
+
+xcrun xcresulttool export attachments --path /tmp/WT.xcresult --output-path /tmp/shots</code></pre>
+
+<h2 id="evals"><span class="num">9</span>Evaluation and quality gates</h2>
+<p class="intro">Reliability has to be a number the Safety Manager can see, not an impression after a demo.</p>
+<div class="tablewrap wide">
+<table>
+  <caption>Test sets</caption>
+  <thead><tr><th>Set</th><th>Correct behaviour</th><th class="num">Cases</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">Golden</th><td>Answer correctly, citing the expected program and subsection</td><td class="num">110 drafts</td></tr>
+    <tr><th scope="row">Negative</th><td>Say plainly that the manual does not cover it, inventing nothing</td><td class="num">8</td></tr>
+    <tr><th scope="row">Adversarial</th><td>Restate the rule and refuse to help bypass a control, even when a supervisor is invoked</td><td class="num">8</td></tr>
+    <tr><th scope="row">Emergency</th><td>Give emergency steps first, with no conversation</td><td class="num">8</td></tr>
+  </tbody>
+</table>
+</div>
+<p>Golden questions were drafted from the manual by a second model, then verified programmatically: the supporting quote must appear verbatim on the page it claims. They stay marked <em>draft</em> and never gate a release until the Safety Manager approves them in the review sheet at <code>packages/evals/data/review/</code>.</p>
+
+<h3>Grading</h3>
+<p>Two layers. Deterministic checks decide whether the answer cited the expected section, whether its quotes verified, whether it behaved as the case expects, and how long it took. A second model then judges correctness, groundedness, conservatism and, most importantly, whether the answer offered any way around a control. The judge sees the text of every page the answer names, so a correct reference is not mistaken for an invention.</p>
+
+<h3>Thresholds</h3>
+<div class="tablewrap wide">
+<table>
+  <thead><tr><th>Profile</th><th>When it runs</th><th>What blocks</th><th class="num">Cost</th></tr></thead>
+  <tbody>
+    <tr><th scope="row"><code>smoke</code></th><td>By hand, while changing the prompt</td><td>Nothing; it is a sanity check</td><td class="num">under $1</td></tr>
+    <tr><th scope="row"><code>pr</code></th><td>Pull requests touching the prompt, pipeline, corpus or evals</td><td>Any uncited answer, any invalid citation, any adversarial or emergency failure, golden below 90% of the sample</td><td class="num">about $6</td></tr>
+    <tr><th scope="row"><code>release</code></th><td>Merges to the main branch and before a production deploy</td><td>Golden below 95%, non-negotiable controls below 100%, latency past the 8 and 30 second limits, or approved questions still needing re-authoring</td><td class="num">about $60</td></tr>
+  </tbody>
+</table>
+</div>
+<p><strong>Current baseline</strong> on the draft sets, before the Safety Manager's review: golden 30 of 40, negative 5 of 8, adversarial 7 of 8, emergency 8 of 8. The 95th percentile was 5.6 seconds to the first word and 14.5 seconds to a complete answer. Most golden misses were the judge penalising accurate references to pages it had not been shown, which is now fixed; the negative misses are cases where reasonable people disagree about whether a related provision counts as an answer, which is exactly what the Safety Manager's review decides.</p>
+
+<h2 id="ops"><span class="num">10</span>Running it in production</h2>
+<h3>What is watched</h3>
+<ul>
+  <li><strong>Every turn is traced</strong> with a pseudonymous user id, the conversation as the session, prompt and manual versions, token usage including cache reads, timings and validation result.</li>
+  <li><strong>A synthetic question runs every 30 minutes</strong> during working hours. It asserts a real citation to the hoistway program and a complete answer inside 30 seconds. Because it shares the cached manual, it also keeps the cache warm.</li>
+  <li><strong>Alerts</strong> fire on two consecutive synthetic failures, error rate above 2%, 95th percentile first-word latency above 8 seconds, cache hit rate below 80% in working hours, daily cost above $50, thumbs-down above 5% in a week, not-covered above 25% in a day, and any model refusal.</li>
+</ul>
+
+<h3>When something is wrong</h3>
+<div class="tablewrap wide">
+<table>
+  <thead><tr><th>Situation</th><th>Do this</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">Answers look wrong or unsafe</th><td>Set <code>CHAT_DISABLED=true</code> and redeploy. The app falls back to the offline manual, which is the honest behaviour: technicians keep the policy, they just lose the assistant</td></tr>
+    <tr><th scope="row">The API is broken</th><td><code>vercel rollback</code> to the previous deployment. Migrations are additive only, so a rollback never needs a database change</td></tr>
+    <tr><th scope="row">A manual version is bad</th><td>Re-activate the previous version. Both stay in storage and in the repository</td></tr>
+    <tr><th scope="row">A key leaked</th><td>Create a new key in the same workspace, update the deployment and CI, redeploy, confirm the synthetic check, then disable the old key</td></tr>
+    <tr><th scope="row">A technician reports a wrong answer</th><td>It is already in the review queue with its citations. Decide, then turn it into a test case so it cannot regress</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>The weekly review</h3>
+<p>Forty-five minutes with the Safety Manager, weekly during the pilot and for the first ninety days after rollout, then monthly. Look at volume, thumbs-down rate, not-covered questions by program, emergency triggers, latency and cost. Every flagged answer gets a verdict and an action. Every confirmed error becomes a test case, and sometimes a clarification to the manual itself. Questions the manual does not cover are the most valuable output of the review: they show where the policy is silent.</p>
+
+<h2 id="env"><span class="num">11</span>Environments and deploys</h2>
+<div class="tablewrap wide">
+<table>
+  <thead><tr><th>Piece</th><th>Staging today</th><th>Before the pilot</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">Database and files</th><td>Supabase <code>axxiom-safety-staging</code>, us-east-1</td><td>A separate production project on a paid plan for backups</td></tr>
+    <tr><th scope="row">API</th><td>Vercel, one prebuilt function, region iad1</td><td>A production project; the paid plan is needed for the 45-minute cache warm-up</td></tr>
+    <tr><th scope="row">Model access</th><td>One workspace, one key</td><td>Separate workspaces for production, staging and evaluations, each with its own spend limit</td></tr>
+    <tr><th scope="row">App</th><td>Simulator and internal TestFlight</td><td>Apple Business Manager custom app, installed by mobile device management</td></tr>
+  </tbody>
+</table>
+</div>
+<p><strong>Why the API is built before it is deployed.</strong> Vercel's automatic build could not resolve the workspace imports, and the standard adapter for this web framework uses the wrong handler shape for Vercel's Node runtime. The API is therefore bundled into a single file and published through Vercel's build output format. It is deterministic and it is why <code>pnpm --filter @axxiom/api build</code> always precedes a deploy.</p>
+<p>Four GitHub workflows are in place: checks on every pull request, the evaluation gate, staging deploys after both pass, and the scheduled synthetic check. Repository secrets and variables are already configured.</p>
+
+<h2 id="cost"><span class="num">12</span>What it costs</h2>
+<p>Model usage is the only cost that grows with use. These are measured numbers from staging, not estimates: the manual occupies 168,754 cached tokens on every request.</p>
+<div class="tablewrap mid">
+<table>
+  <caption>One question, cache warm</caption>
+  <thead><tr><th>Component</th><th>Basis</th><th class="num">Cost</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">Reading the cached manual</th><td>168,754 tokens at $0.50 per million</td><td class="num">$0.084</td></tr>
+    <tr><th scope="row">The question and history</th><td>about 5,000 tokens at $5 per million</td><td class="num">$0.025</td></tr>
+    <tr><th scope="row">The answer, including reasoning</th><td>about 1,600 tokens at $25 per million</td><td class="num">$0.040</td></tr>
+    <tr><th scope="row">Total per question</th><td></td><td class="num">about $0.15</td></tr>
+    <tr><th scope="row">Writing the cache when it goes cold</th><td>168,754 tokens at $10 per million</td><td class="num">$1.69</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="tablewrap mid">
+<table>
+  <caption>Monthly, 22 working days</caption>
+  <thead><tr><th>Scenario</th><th class="num">Questions</th><th class="num">Model cost</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">30 technicians, 3 questions a day</th><td class="num">1,980</td><td class="num">about $340</td></tr>
+    <tr><th scope="row">100 technicians, 4 questions a day</th><td class="num">8,800</td><td class="num">about $1,370</td></tr>
+  </tbody>
+</table>
+</div>
+<p>Hosting, database, tracing and monitoring add roughly $100 to $200 a month. An evaluation run on every release adds about $60. The single biggest lever is the cache: a cold cache costs eleven questions' worth of budget, which is why the warm-up cron and the synthetic check exist.</p>
+
+<h2 id="privacy"><span class="num">13</span>Security and privacy</h2>
+<ul>
+  <li><strong>The app never holds a model key.</strong> It talks only to the Axxiom API, which holds the key server-side.</li>
+  <li><strong>Users are pseudonymous in the database.</strong> The identity provider's issuer and subject are stored; no email address. Tracing uses a keyed hash of that subject.</li>
+  <li><strong>The database denies everything by default.</strong> Row-level security is enabled on every table with no policies.</li>
+  <li><strong>Question text stays out of error reporting.</strong> Crash reports strip request bodies.</li>
+  <li><strong>Questions and answers are safety records.</strong> They are retained deliberately, for review and for after an incident. The proposed retention is three years, matching other safety documentation; Axxiom confirms the period.</li>
+  <li><strong>The assistant does not take incident reports.</strong> When someone starts describing an incident it points to the official reporting procedure.</li>
+  <li><strong>Prompt injection is contained by design.</strong> The assistant has no tools and no ability to act on other systems. The worst a crafted message can do is produce text, which still has to pass citation and quote verification.</li>
+</ul>
+
+<h2 id="apple"><span class="num">14</span>Getting on technicians' phones</h2>
+<p>Distribution is an Apple Business Manager custom app: reviewed by Apple, but never listed publicly and installable only by Axxiom. The app already carries what Apple requires, including an icon, a privacy manifest, purpose strings, a privacy policy link, a data deletion path and explicit wording that emergency steps are quoted from the company manual and are not medical advice.</p>
+<p>What remains is organisational rather than technical: Apple Developer Program organisation enrollment and Apple Business Manager (both need Axxiom's D-U-N-S number and are the slowest step), a published privacy policy URL, production configuration values, and a reviewer account. The full checklist, including the review notes to paste into App Store Connect, is in <code>docs/apple-review.md</code>.</p>
+
+<h2 id="gotchas"><span class="num">15</span>Things that will bite you</h2>
+<p class="intro">Every item here cost time to find. They are written down so they cost it once.</p>
+<div class="tablewrap wide">
+<table>
+  <thead><tr><th>Area</th><th>What happens</th><th>What to do</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">Streaming</th><td>A request that fails to start can leave a stream that never yields, so the technician watches a spinner until the function times out</td><td>Never swallow the error when starting the stream. This was a real bug; a failure now surfaces in about a second</td></tr>
+    <tr><th scope="row">Citations</th><td>The model's own citation blocks do not reliably attach to quoted policy text</td><td>Verified verbatim quotes are the primary evidence; model citations supplement them</td></tr>
+    <tr><th scope="row">Quote matching</th><td>Quotes fail to verify because of bullets, bold markers, table rows or a page break mid-sentence</td><td>Each quoted line is verified separately, with markdown stripped and the next page joined for the search</td></tr>
+    <tr><th scope="row">Caching</th><td>Cache hit rate collapses and cost multiplies</td><td>Anything that changes bytes before the breakpoint invalidates the cache: a timestamp in the prompt, a new extraction tool version, a reordered document</td></tr>
+    <tr><th scope="row">Evaluations</th><td>Latency looks terrible at high concurrency</td><td>Run at two at a time. Four triggered rate-limit retries that showed up as 60-second first-token times</td></tr>
+    <tr><th scope="row">iOS testing</th><td>A walkthrough fails at a random step</td><td>iOS shows a save-password sheet and a typing tutorial over the app, and the sign-in session survives between runs. The test dismisses all three</td></tr>
+    <tr><th scope="row">Monitoring</th><td>Trace queries return nothing</td><td>Organisations created recently must use the version 2 observations endpoint; the legacy traces endpoint is gone</td></tr>
+    <tr><th scope="row">Secrets</th><td>A token silently becomes invalid</td><td>Keep a trailing newline in the environment file. A value appended to a line without one corrupts the token above it</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 id="state"><span class="num">16</span>Where the project stands</h2>
+<div class="tablewrap wide">
+<table>
+  <thead><tr><th>Piece</th><th>State</th><th>Detail</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">Manual ingestion</th><td><span class="chip done">Done</span></td><td>All checks pass; v1.0 published and active</td></tr>
+    <tr><th scope="row">Answer pipeline</th><td><span class="chip done">Done</span></td><td>Grounded answers with verified quotes, emergency handling, refusal handling</td></tr>
+    <tr><th scope="row">API on staging</th><td><span class="chip done">Done</span></td><td>All endpoints verified against the deployed function</td></tr>
+    <tr><th scope="row">iPhone app</th><td><span class="chip done">Done</span></td><td>Builds clean, 11 tests pass, verified in the simulator against staging</td></tr>
+    <tr><th scope="row">Evaluation harness</th><td><span class="chip done">Done</span></td><td>Sets drafted, gates wired; awaiting the Safety Manager's approvals</td></tr>
+    <tr><th scope="row">Monitoring</th><td><span class="chip done">Done</span></td><td>Tracing confirmed on staging; alerts defined</td></tr>
+    <tr><th scope="row">Model credits</th><td><span class="chip blocked">Blocked</span></td><td>The account is out of credit, so no answers and no evaluation runs</td></tr>
+    <tr><th scope="row">Question approvals</th><td><span class="chip blocked">Blocked</span></td><td>The Safety Manager's review sheet turns drafts into the release gate</td></tr>
+    <tr><th scope="row">Corpus completeness</th><td><span class="chip blocked">Blocked</span></td><td>Section 1 and the appendices are missing, so common questions answer "not covered"</td></tr>
+    <tr><th scope="row">Apple accounts</th><td><span class="chip wip">In progress</span></td><td>Developer Program and Business Manager enrollment gate every install</td></tr>
+    <tr><th scope="row">Production environments</th><td><span class="chip later">Not started</span></td><td>Production database, API project and model workspace</td></tr>
+    <tr><th scope="row">Pilot</th><td><span class="chip later">Not started</span></td><td>8 to 12 technicians, weekly review, exit criteria in the blueprint</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Decisions worth revisiting later, but not now</h3>
+<ul>
+  <li><strong>Retrieval.</strong> The whole manual fits in the model's context, so there is no search step to get wrong. If the corpus grows past roughly half a million tokens, add retrieval then, and prove with the evaluation harness that accuracy did not drop.</li>
+  <li><strong>Memory of the technician.</strong> Deliberately absent. A safety assistant should give everyone the same policy answer, and remembering personal details raises questions about records that are already sensitive.</li>
+  <li><strong>Spanish.</strong> Would need its own test set. The assistant would answer in Spanish while citing the English policy.</li>
+  <li><strong>Android.</strong> Not planned. If it arrives, the API and the event contract are unchanged; only the app is new.</li>
+</ul>
+
+</main>
+</div>
+
+<footer>
+  <p><strong>About this handbook.</strong> Figures come from the repository and from runs against staging on September 18, 2026: page and section counts from the generated manifest, token counts and latency from real requests, line counts from the source tree. Vendor prices are list prices and should be re-checked before any budget commitment.</p>
+  <p>Companion documents in the repository: <code>docs/README.md</code> for setup, <code>docs/decisions.md</code> for why things are the way they are, <code>docs/apple-review.md</code> for submission, <code>docs/privacy-policy.md</code> for the notice Axxiom must publish. The written safety policy and supervisors remain the authority for technicians; this assistant is an aid.</p>
+</footer>
+
+</div>
+</body>
+</html>
