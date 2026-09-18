@@ -56,12 +56,12 @@ enum ChatFailure: Error, Equatable {
         }
     }
 
+    /// Before the first byte a failure means "offline"; after it, the answer was cut short.
     static func from(urlError: URLError, receivedBytes: Bool) -> ChatFailure {
         switch urlError.code {
-        case .cancelled: return .cancelled
-        case .notConnectedToInternet, .cannotFindHost, .cannotConnectToHost, .dnsLookupFailed, .timedOut where !receivedBytes:
-            return .offline
-        case .networkConnectionLost, .timedOut:
+        case .cancelled:
+            return .cancelled
+        case .networkConnectionLost:
             return .interrupted
         default:
             return receivedBytes ? .interrupted : .offline
