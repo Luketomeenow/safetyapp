@@ -7,7 +7,7 @@ export {
   DuplicateMessageError,
   sanitizeForReplay,
 } from "./answer.ts";
-export type { CoreConfig } from "./config.ts";
+export type { CoreConfig, Tracer, TraceSpan } from "./config.ts";
 export { getConfig } from "./config.ts";
 export type { Playbooks } from "./emergency.ts";
 export { detectEmergency, loadPlaybooks, renderEmergencyText } from "./emergency.ts";

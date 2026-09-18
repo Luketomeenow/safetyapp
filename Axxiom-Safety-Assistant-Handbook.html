@@ -467,7 +467,9 @@ xcrun xcresulttool export attachments --path /tmp/WT.xcresult --output-path /tmp
 <h2 id="ops"><span class="num">10</span>Running it in production</h2>
 <h3>What is watched</h3>
 <ul>
-  <li><strong>Every turn is traced</strong> with a pseudonymous user id, the conversation as the session, prompt and manual versions, token usage including cache reads, timings and validation result.</li>
+  <li><strong>Every turn is traced</strong> with a pseudonymous user id, the conversation as the session, prompt and manual versions, token usage including cache reads, and the validation result. Nested spans time each phase separately, so a slow answer is attributed to loading the manual, assembling the request, the model call, validation or saving rather than guessed at.</li>
+  <li><strong>Traces carry no question or answer text.</strong> They hold counts, the response kind, citation page and section numbers, and the message id that finds the full turn in the database. That keeps a third vendor out of the content while still answering where the time and money went. Text can be attached deliberately outside production with <code>LANGFUSE_INCLUDE_TEXT</code> when one answer has to be debugged.</li>
+  <li><strong>Failed turns exist only in the trace.</strong> When a question errors before an answer exists, no message row is written, so tracing is the only place that records a technician asking something and getting nothing.</li>
   <li><strong>A synthetic question runs every 30 minutes</strong> during working hours. It asserts a real citation to the hoistway program and a complete answer inside 30 seconds. Because it shares the cached manual, it also keeps the cache warm.</li>
   <li><strong>Alerts</strong> fire on two consecutive synthetic failures, error rate above 2%, 95th percentile first-word latency above 8 seconds, cache hit rate below 80% in working hours, daily cost above $50, thumbs-down above 5% in a week, not-covered above 25% in a day, and any model refusal.</li>
 </ul>
@@ -536,7 +538,7 @@ xcrun xcresulttool export attachments --path /tmp/WT.xcresult --output-path /tmp
   <li><strong>The app never holds a model key.</strong> It talks only to the Axxiom API, which holds the key server-side.</li>
   <li><strong>Users are pseudonymous in the database.</strong> The identity provider's issuer and subject are stored; no email address. Tracing uses a keyed hash of that subject.</li>
   <li><strong>The database denies everything by default.</strong> Row-level security is enabled on every table with no policies.</li>
-  <li><strong>Question text stays out of error reporting.</strong> Crash reports strip request bodies.</li>
+  <li><strong>Question text stays out of error reporting and monitoring.</strong> Crash reports strip request bodies, and traces carry metadata only. Postgres and the model provider are the only systems that see what a technician typed.</li>
   <li><strong>Questions and answers are safety records.</strong> They are retained deliberately, for review and for after an incident. The proposed retention is three years, matching other safety documentation; Axxiom confirms the period.</li>
   <li><strong>The assistant does not take incident reports.</strong> When someone starts describing an incident it points to the official reporting procedure.</li>
   <li><strong>Prompt injection is contained by design.</strong> The assistant has no tools and no ability to act on other systems. The worst a crafted message can do is produce text, which still has to pass citation and quote verification.</li>

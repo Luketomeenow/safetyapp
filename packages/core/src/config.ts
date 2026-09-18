@@ -1,3 +1,7 @@
+/** A span the caller may record; the pipeline knows nothing about the tracing vendor. */
+export type TraceSpan = { end: (attributes?: Record<string, unknown>) => void };
+export type Tracer = { span: (name: string, attributes?: Record<string, unknown>) => TraceSpan };
+
 export type CoreConfig = {
   model: string;
   effort: "low" | "medium" | "high" | "xhigh" | "max";

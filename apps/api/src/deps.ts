@@ -5,6 +5,7 @@ import postgres from "postgres";
 import bundledPlaybooks from "../../../corpus/axxiom-s2/v1.0/emergency-playbooks.json" with {
   type: "json",
 };
+import { langfuseTracer } from "./tracing.ts";
 
 function requireEnv(name: string): string {
   const v = process.env[name];
@@ -30,6 +31,7 @@ export function getDeps(): Deps {
         : (bundledPlaybooks as Playbooks),
       anthropic: new Anthropic({ maxRetries: 2, timeout: 120_000 }),
       config: getConfig(),
+      ...(process.env.LANGFUSE_PUBLIC_KEY ? { tracer: langfuseTracer } : {}),
     });
   }
   return cachedDeps;

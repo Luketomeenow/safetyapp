@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import Anthropic from "@anthropic-ai/sdk";
 import type { ChatEvent, DoneCitation, ResponseKind } from "@axxiom/shared";
 import type postgres from "postgres";
-import { type CoreConfig, getConfig } from "./config.ts";
+import { type CoreConfig, getConfig, type Tracer } from "./config.ts";
 import {
   detectEmergency,
   type EmergencyMatch,
@@ -41,6 +41,8 @@ export type Deps = {
   playbooks: Playbooks;
   config: CoreConfig;
   now: () => number;
+  /** Optional: records how long each phase of the turn took. */
+  tracer?: Tracer;
 };
 
 export type AnswerResult = {
@@ -153,6 +155,7 @@ export function createDeps(
     now: overrides.now ?? (() => Date.now()),
     sql: overrides.sql,
     playbooks: overrides.playbooks,
+    ...(overrides.tracer ? { tracer: overrides.tracer } : {}),
   };
 }
 
@@ -165,11 +168,16 @@ export async function* answerQuestion(
   deps: Deps,
 ): AsyncGenerator<ChatEvent, AnswerResult> {
   const started = deps.now();
+  const trace = (name: string, attributes?: Record<string, unknown>) =>
+    deps.tracer?.span(name, attributes);
+  const loadSpan = trace("load_manual");
   const persist = input.persist !== false;
   const manual = await loadActiveManual(deps.sql);
+  loadSpan?.end({ manual_version: manual.version_id, pages: manual.page_count });
   const manualRef = { version_id: manual.version_id, effective_date: manual.effective_date };
 
   let conversationId = input.conversationId ?? "";
+  const prepareSpan = trace("prepare_conversation");
   let history: { role: "user" | "assistant"; content: unknown[] }[] = [];
   if (persist) {
     try {
@@ -209,6 +217,8 @@ export async function* answerQuestion(
     }
   }
 
+  prepareSpan?.end({ history_turns: history.length });
+
   yield { event: "status", data: { stage: "reading_manual" } };
 
   const emergency = detectEmergency(input.message, deps.playbooks);
@@ -224,8 +234,10 @@ export async function* answerQuestion(
       persist,
     );
 
+  const assembleSpan = trace("assemble_request");
   const prefix = buildRequestPrefix(manual);
   const messages = buildMessages(prefix, history, input.message);
+  assembleSpan?.end({ blocks: manual.pages.length, turns: messages.length });
   const baseParams = {
     model: deps.config.model,
     max_tokens: deps.config.maxTokens,
@@ -244,6 +256,7 @@ export async function* answerQuestion(
 
   // Start the request before consuming it, so an immediate failure (rejected beta header, auth,
   // billing, rate limit) surfaces as an error event instead of a stream that never yields.
+  const modelSpan = trace("model_call", { model: deps.config.model, effort: deps.config.effort });
   let stream = open(withFallbacks);
   let openError: unknown = null;
   try {
@@ -262,6 +275,7 @@ export async function* answerQuestion(
   }
   if (openError !== null) {
     const mapped = mapAnthropicError(openError);
+    modelSpan?.end({ outcome: "failed_to_start", code: mapped.code });
     console.error("chat request failed to start", { code: mapped.code, alert: mapped.alert });
     yield {
       event: "error",
@@ -339,6 +353,7 @@ export async function* answerQuestion(
     }
   } catch (error) {
     const mapped = mapAnthropicError(error);
+    modelSpan?.end({ outcome: "stream_error", code: mapped.code });
     if (mentionsBetaHeader(error) && deps.config.enableRefusalFallbacks) {
       mapped.message = `${mapped.message} (fallback beta rejected; disable ENABLE_REFUSAL_FALLBACKS)`;
     }
@@ -370,8 +385,17 @@ export async function* answerQuestion(
   };
   const iterations = (final.usage as { iterations?: { type: string }[] }).iterations ?? [];
   const fallbackRan = iterations.some((i) => i.type === "fallback_message");
+  modelSpan?.end({
+    outcome: "ok",
+    model: final.model,
+    usage,
+    stop_reason: stopReason,
+    ttft_ms: ttft,
+    fallback_ran: fallbackRan,
+  });
 
   yield { event: "status", data: { stage: "verifying" } };
+  const validateSpan = trace("validate");
   const citedPages = [
     ...new Set(
       rawCitations.flatMap((c) =>
@@ -389,6 +413,13 @@ export async function* answerQuestion(
   let finalKind: ResponseKind = kind ?? "validation_failed";
   let displayText = body;
   const validation = validateAnswer(manual, { kind, body, citedPages, citedTexts, stopReason });
+  validateSpan?.end({
+    passed: validation.passed,
+    quotes_verified: validation.quotesVerified,
+    valid_pages: validation.validPages.length,
+    // Problem codes only: the full text can quote the manual or the model's own wording.
+    problems: validation.problems.map((x) => x.split(":")[0]),
+  });
   if (stopReason === "refusal") {
     finalKind = "refusal";
     displayText = fallbackText("refusal", validation.validPages, manual);
@@ -460,6 +491,7 @@ export async function* answerQuestion(
   const total = deps.now() - started;
   let messageId: string | null = null;
   if (persist) {
+    const persistSpan = trace("persist");
     const saved = await saveTurn(deps.sql, {
       conversationId,
       manualVersionId: manual.version_id,
@@ -491,6 +523,7 @@ export async function* answerQuestion(
       },
     });
     messageId = saved.messageId;
+    persistSpan?.end({ citations: citationRows.length });
   }
 
   const result: AnswerResult = {
