@@ -86,7 +86,13 @@ final class WalkthroughTests: XCTestCase {
         let accept = app.buttons["accept-disclaimer"]
         if accept.waitForExistence(timeout: 30) {
             shoot("02-disclaimer")
-            tapUntilGone(accept)
+            accept.tap()
+            // Confirm the chat screen arrived rather than tapping again blindly: a stray tap lands
+            // on the keyboard and can send an empty-headed message.
+            if !app.textFields["question-field"].waitForExistence(timeout: 12) {
+                dismissSystemPasswordPrompt()
+                if accept.exists { accept.tap() }
+            }
         }
 
         // 3. Chat screen
@@ -94,11 +100,17 @@ final class WalkthroughTests: XCTestCase {
         XCTAssertTrue(question.waitForExistence(timeout: 20), "chat screen did not appear")
         shoot("03-chat-empty")
 
-        // 4. Ask a real question
+        // 4. Ask a real question, from a fresh conversation
+        if app.buttons["New conversation"].exists {
+            app.buttons["New conversation"].tap()
+            _ = app.textFields["question-field"].waitForExistence(timeout: 10)
+        }
         question.tap()
         question.typeText("When can I use a tag instead of a lock?")
         shoot("04-question-typed")
-        app.buttons["send-button"].tap()
+        let send = app.buttons["send-button"]
+        XCTAssertTrue(send.waitForExistence(timeout: 20), "send button missing: is an answer already streaming?")
+        send.tap()
         // Either a cited answer or a failure card; both are informative.
         let citation = app.buttons.containing(NSPredicate(format: "label CONTAINS[c] 'Open Program'")).firstMatch
         let failure = app.staticTexts.containing(NSPredicate(format: "label CONTAINS[c] 'unavailable' OR label CONTAINS[c] 'offline' OR label CONTAINS[c] 'unexpected error' OR label CONTAINS[c] \"doesn't cover\"")).firstMatch

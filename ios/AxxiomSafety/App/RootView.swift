@@ -48,9 +48,11 @@ struct RootView: View {
                     .tabItem { Label("Settings", systemImage: "gearshape") }
                     .tag(AppRouter.Tab.settings)
             }
+            // Clears the tab bar and the chat input row: the button must never sit over the
+            // send or microphone controls, or a technician taps Emergency while asking a question.
             EmergencyButton()
                 .padding(.trailing, 16)
-                .padding(.bottom, 64)
+                .padding(.bottom, 150)
         }
     }
 }
