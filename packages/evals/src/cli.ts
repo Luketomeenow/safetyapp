@@ -43,6 +43,14 @@ const { values, positionals } = parseArgs({
   },
 });
 
+// A run costs real money: never let one stray socket error kill the process before the report.
+process.on("unhandledRejection", (reason) => {
+  process.stderr.write(`warning: unhandled rejection ignored: ${String(reason).slice(0, 200)}\n`);
+});
+process.on("uncaughtException", (error) => {
+  process.stderr.write(`warning: uncaught exception ignored: ${String(error).slice(0, 200)}\n`);
+});
+
 const repoRoot = process.env.INIT_CWD ?? process.cwd();
 const envFile = path.join(repoRoot, ".env");
 if (existsSync(envFile)) process.loadEnvFile(envFile);

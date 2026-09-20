@@ -41,6 +41,37 @@ const EMPTY: Usage = {
   cache_creation_input_tokens: 0,
 };
 
+/** A hung stream must not block a worker; the SDK's own timeout does not cover a stalled read. */
+const PER_CASE_TIMEOUT_MS = Number(process.env.EVAL_CASE_TIMEOUT_MS ?? 180_000);
+
+function isTransient(error: unknown): boolean {
+  const text = error instanceof Error ? `${error.name} ${error.message}` : String(error);
+  return /ECONNRESET|ETIMEDOUT|EPIPE|socket hang up|fetch failed|network|AbortError|terminated/i.test(
+    text,
+  );
+}
+
+async function answerWithLimits(c: EvalCase, deps: Deps, userId: string): Promise<AnswerResult> {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), PER_CASE_TIMEOUT_MS);
+    try {
+      return await answerOnce(
+        { userId, message: c.question, persist: false, signal: controller.signal },
+        deps,
+      );
+    } catch (error) {
+      lastError = error;
+      if (attempt === 2 || !isTransient(error)) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  throw lastError;
+}
+
 async function runOne(
   c: EvalCase,
   rep: number,
@@ -63,7 +94,7 @@ async function runOne(
   };
   let r: AnswerResult;
   try {
-    r = await answerOnce({ userId, message: c.question, persist: false }, deps);
+    r = await answerWithLimits(c, deps, userId);
   } catch (error) {
     return {
       ...base,
@@ -131,7 +162,14 @@ async function runOne(
 
 export async function runEval(o: RunOptions): Promise<RunOutput> {
   const started_at = new Date().toISOString();
-  const sql = postgres(process.env.DATABASE_URL as string, { prepare: false, max: 4 });
+  const sql = postgres(process.env.DATABASE_URL as string, {
+    prepare: false,
+    max: 4,
+    idle_timeout: 20,
+    max_lifetime: 300,
+    connect_timeout: 15,
+    onnotice: () => {},
+  });
   const deps = createDeps({
     sql,
     playbooks: loadPlaybooks(
