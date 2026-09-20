@@ -5,16 +5,18 @@ struct SignInScreen: View {
     @State private var email = ""
     @State private var password = ""
     @State private var busy = false
+    /// Suppresses the system "Save Password?" sheet, which covers the app during automated runs.
+    private let isUITesting = ProcessInfo.processInfo.arguments.contains("-uiTesting")
 
     var body: some View {
         NavigationStack {
             Form {
                 Section {
                     TextField("Work email", text: $email)
-                        .textContentType(.username).keyboardType(.emailAddress).textInputAutocapitalization(.never)
+                        .textContentType(isUITesting ? nil : .username).keyboardType(.emailAddress).textInputAutocapitalization(.never)
                         .accessibilityIdentifier("email-field")
                     SecureField("Password", text: $password)
-                        .textContentType(.password)
+                        .textContentType(isUITesting ? nil : .password)
                         .accessibilityIdentifier("password-field")
                 }
                 if let error = session.signInError { Text(error).foregroundStyle(.red) }
